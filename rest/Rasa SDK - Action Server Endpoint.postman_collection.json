@@ -3,7 +3,8 @@
 		"_postman_id": "2b83fb3f-d50f-4136-9bcc-f2f2a663f972",
 		"name": "Rasa SDK - Action Server Endpoint",
 		"description": "API of the action server which is used by Rasa to execute custom actions.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12083801"
 	},
 	"item": [
 		{

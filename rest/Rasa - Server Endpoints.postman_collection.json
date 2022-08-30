@@ -3,7 +3,8 @@
 		"_postman_id": "040d3997-bf06-4d2c-944c-10757def7632",
 		"name": "Rasa - Server Endpoints",
 		"description": "The Rasa server provides endpoints to retrieve trackers of conversations as well as endpoints to modify them. Additionally, endpoints for training and testing models are provided.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12083801"
 	},
 	"item": [
 		{
