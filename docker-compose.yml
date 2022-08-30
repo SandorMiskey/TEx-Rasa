@@ -1,0 +1,55 @@
+version: '3.0'
+
+services:
+  rasa1:
+    image: rasa/rasa:latest-full
+    networks: ['rasa-network']
+    ports:
+    - "5001:5005"
+    volumes:
+    - "./storage/rasa1/:/app/"
+    command: >
+      run
+      --enable-api
+      --cors "*"
+      --debug
+  rasa2:
+    image: rasa/rasa:latest-full
+    networks: ['rasa-network']
+    ports:
+    - "5002:5005"
+    volumes:
+    - "./storage/rasa2/:/app/"
+    command: >
+      run
+      --enable-api
+      --cors "*"
+      --debug
+  rasa3:
+    image: rasa/rasa:latest-full
+    networks: ['rasa-network']
+    ports:
+    - "5003:5005"
+    volumes:
+    - "./storage/rasa3/:/app/"
+    command: >
+      run
+      --enable-api
+      --cors "*"
+      --debug
+
+  action_server:
+    image: rasa/rasa-sdk:latest
+    networks: ['rasa-network']
+    ports:
+    - "5055:5055"
+    volumes:
+    - "./storage/actions:/app/actions"
+
+  duckling:
+    image: rasa/duckling:latest
+    networks: ['rasa-network']
+    ports:
+    - "8000:8000"
+
+networks: {rasa-network: {}}
