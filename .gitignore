@@ -6,7 +6,6 @@
 *.mwb.bak
 Gopkg.lock
 # bin
-.env
 
 # Created by https://www.toptal.com/developers/gitignore/api/go,vim,web,macos,linux,visualstudiocode,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,vim,web,macos,linux,visualstudiocode,node
