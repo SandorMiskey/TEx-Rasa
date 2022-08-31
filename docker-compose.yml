@@ -1,44 +1,44 @@
 version: '3.0'
 
 services:
-  rasa1:
+  agent1:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
     - "5001:5005"
     volumes:
-    - "./storage/rasa1/:/app/"
+    - "./storage/agent1/:/app/"
     command: >
       run
       --enable-api
       --cors "*"
       --debug
-  rasa2:
+  agent2:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
     - "5002:5005"
     volumes:
-    - "./storage/rasa2/:/app/"
+    - "./storage/agent2/:/app/"
     command: >
       run
       --enable-api
       --cors "*"
       --debug
-  rasa3:
+  agent3:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
     - "5003:5005"
     volumes:
-    - "./storage/rasa3/:/app/"
+    - "./storage/agent3/:/app/"
     command: >
       run
       --enable-api
       --cors "*"
       --debug
 
-  action_server:
+  actions:
     image: rasa/rasa-sdk:latest
     networks: ['rasa-network']
     ports:
