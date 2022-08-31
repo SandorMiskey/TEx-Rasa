@@ -5,6 +5,9 @@
 *.go_
 *.mwb.bak
 Gopkg.lock
+.config
+.keras
+.rasa
 # bin
 
 # Created by https://www.toptal.com/developers/gitignore/api/go,vim,web,macos,linux,visualstudiocode,node
