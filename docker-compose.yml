@@ -1,6 +1,19 @@
 version: '3.0'
 
 services:
+
+  mgmt:
+    image: alpine:latest
+    networks: ['rasa-network']
+    ports:
+    - "8080:8080"
+    volumes:
+    - "./storage/mgmet/:/app/"
+    command: >
+      # run
+      # --enable-api
+      # --cors "*"
+
   agent1:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
