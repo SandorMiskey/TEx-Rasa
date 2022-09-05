@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "nlp": {
+      "corpora": [
+        "/home/erik/chatbotjs/corpus.json"
+      ]
+    }
+  },
+  "use": ["Basic", "LangEn", "ConsoleConnector"]
+}
