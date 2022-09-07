@@ -3,11 +3,17 @@
 package main
 
 import (
+	"fmt"
 	"log/syslog"
+	"net"
 	"os"
+	"strconv"
+	"sync"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
+	"github.com/buaazp/fasthttprouter"
+	"github.com/valyala/fasthttp"
 )
 
 // endregion: packages
@@ -18,6 +24,13 @@ var (
 	Logger log.Logger
 )
 
+const (
+	LOG_ERR    syslog.Priority = log.LOG_ERR
+	LOG_NOTICE syslog.Priority = log.LOG_NOTICE
+	LOG_INFO   syslog.Priority = log.LOG_INFO
+	LOG_DEBUG  syslog.Priority = log.LOG_DEBUG
+)
+
 // endregion: globals
 
 func main() {
@@ -25,17 +38,27 @@ func main() {
 	// region: config and cli flags
 
 	Config = *cfg.NewConfig(os.Args[0])
-	fs := Config.NewFlagSet(os.Args[0])
-	fs.Entries = map[string]cfg.Entry{
-		"httpEnable":  {Desc: "enable http", Type: "bool", Def: true},
-		"httpPort":    {Desc: "http port", Type: "int", Def: 8080},
-		"httpsEnable": {Desc: "enable http", Type: "bool", Def: true},
-		"httpsPort":   {Desc: "http port", Type: "int", Def: 8081},
+	flagSet := Config.NewFlagSet(os.Args[0])
+	flagSet.Entries = map[string]cfg.Entry{
+		"httpEnabled":            {Desc: "enable http", Type: "bool", Def: true},
+		"httpName":               {Desc: "server name in response header", Type: "string", Def: "TEx-Rasa management service"},
+		"httpLogAllErrors":       {Desc: "enable http", Type: "bool", Def: true},
+		"httpMaxRequestBodySize": {Desc: "http max request body size ", Type: "int", Def: 4 * 1024 * 1024},
+		"httpNetworkProto":       {Desc: "network protocol must be 'tcp', 'tcp4', 'tcp6', 'unix' or 'unixpacket'", Type: "string", Def: "tcp"},
+		"httpPort":               {Desc: "http port", Type: "int", Def: 8080},
+		"httpStaticEnabled":      {Desc: "enable serving static files", Type: "bool", Def: false},
+		"httpStaticRoot":         {Desc: "path to static files", Type: "string", Def: "storage/mgmt"},
+		"httpStaticIndex":        {Desc: "index file to serve during directory access", Type: "string", Def: "index.html"},
+		"httpStaticError":        {Desc: "location to redirect in case of 404", Type: "string", Def: "index.html"},
+		"httpTLSCert":            {Desc: "https certificate", Type: "string", Def: ""},
+		"httpTLSEnabled":         {Desc: "enable https", Type: "bool", Def: true},
+		"httpTLSKey":             {Desc: "private key for HTTPS certificate", Type: "string", Def: ""},
+		"httpTLSPort":            {Desc: "https port", Type: "int", Def: 8081},
 
-		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 5},
+		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 7},
 	}
 
-	err := fs.ParseCopy()
+	err := flagSet.ParseCopy()
 	if err != nil {
 		panic(err)
 	}
@@ -49,11 +72,84 @@ func main() {
 	defer Logger.Close()
 	_, _ = Logger.NewCh(log.ChConfig{Severity: &logLevel})
 
-	_ = Logger.Out(logLevel, *log.ChDefaults.Mark)
+	Logger.Out(LOG_DEBUG, Config)
 
 	// endregion: logger
-	// region:
+	// region: http routing
 
-	// endregion:
+	httpRouterActual := fasthttprouter.New()
+	if Config.Entries["httpStaticEnabled"].Value.(bool) {
+		httpFS := &fasthttp.FS{
+			Root:       Config.Entries["httpStaticRoot"].Value.(string),
+			IndexNames: []string{Config.Entries["httpStaticIndex"].Value.(string)},
+			PathNotFound: func(ctx *fasthttp.RequestCtx) {
+				Logger.Out(LOG_NOTICE, "dead end", ctx)
+				ctx.Redirect(Config.Entries["httpStaticError"].Value.(string), 303)
+			},
+			Compress:           true,
+			AcceptByteRange:    true,
+			GenerateIndexPages: false,
+		}
+
+		httpRouterActual.NotFound = httpFS.NewRequestHandler()
+	}
+
+	httpRouterPre := fasthttprouter.New()
+	httpRouterPre.NotFound = func(ctx *fasthttp.RequestCtx) {
+		Logger.Out(LOG_DEBUG, fmt.Sprintf("%s request on %s from %s with content type '%s' and body '%s' (%s)", ctx.Method(), ctx.Path(), ctx.RemoteAddr(), ctx.Request.Header.Peek("Content-Type"), ctx.PostBody(), ctx))
+		Logger.Out(LOG_INFO, ctx)
+		httpRouterActual.Handler(ctx)
+	}
+
+	// endregion: http routing
+	// region: http and https
+
+	var wg sync.WaitGroup
+
+	if Config.Entries["httpEnabled"].Value.(bool) {
+		http := &fasthttp.Server{
+			// Logger:             Logger,
+			Handler:            httpRouterPre.Handler,
+			LogAllErrors:       Config.Entries["httpLogAllErrors"].Value.(bool),
+			MaxRequestBodySize: Config.Entries["httpMaxRequestBodySize"].Value.(int),
+			Name:               Config.Entries["httpName"].Value.(string),
+		}
+		ln, err := net.Listen(Config.Entries["httpNetworkProto"].Value.(string), ":"+strconv.Itoa(Config.Entries["httpPort"].Value.(int)))
+		if err != nil {
+			Logger.Out(LOG_ERR, "error while opening http listener", err)
+		} else {
+
+			wg.Add(1)
+			go func() {
+				Logger.Out(LOG_INFO, "listening for HTTP requests", Config.Entries["httpNetworkProto"].Value, Config.Entries["httpPort"].Value)
+				http.Serve(ln)
+			}()
+		}
+	}
+
+	if Config.Entries["httpTLSEnabled"].Value.(bool) {
+		https := &fasthttp.Server{
+			// Logger:          Logger,
+			Handler:            httpRouterPre.Handler,
+			LogAllErrors:       Config.Entries["httpLogAllErrors"].Value.(bool),
+			MaxRequestBodySize: Config.Entries["httpMaxRequestBodySize"].Value.(int),
+			Name:               Config.Entries["httpName"].Value.(string),
+		}
+		ln, err := net.Listen(Config.Entries["httpNetworkProto"].Value.(string), ":"+strconv.Itoa(Config.Entries["httpTLSPort"].Value.(int)))
+		if err != nil {
+			Logger.Out(LOG_ERR, "error while opening https listener", err)
+		} else {
+
+			wg.Add(1)
+			go func() {
+				Logger.Out(LOG_INFO, "listening for HTTPS requests", Config.Entries["httpNetworkProto"].Value, Config.Entries["httpTLSPort"].Value)
+				https.ServeTLSEmbed(ln, []byte(Config.Entries["httpTLSCert"].Value.(string)), []byte(Config.Entries["httpTLSKey"].Value.(string)))
+			}()
+		}
+	}
+
+	wg.Wait()
+
+	// endregion: http and https
 
 }
