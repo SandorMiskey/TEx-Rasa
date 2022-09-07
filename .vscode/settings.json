@@ -3,9 +3,12 @@
 		"erba",
 		"fasthttprouter",
 		"Loglevel",
+		"mgmt",
+		"Rasa"
 	],
 	"cSpell.ignoreWords": [
 		"Atoi",
+		"buaazp",
 		"Cleartext",
 		"EMERG",
 		"Errorf",
@@ -39,6 +42,7 @@
 		"swaggerapi",
 		"tecommercedev",
 		"trustone",
+		"valyala",
 		"wmenu"
 	],
 	"editor.foldingStrategy": "indentation",
@@ -46,6 +50,7 @@
 		"**/*.fasthttp.gz": true,
 		"**/main.wasm": true
 	},
+	"html.format.enable": false,
 	// "files.associations": {
 	// 	"*.gocc": "go",
 	// },
