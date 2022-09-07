@@ -10,7 +10,7 @@ services:
     volumes:
     - "./storage/mgmt/:/srv/"
     command: >
-      sh -c "cd /srv && ./main -httpStaticRoot public"
+      sh -c "cd /srv && ./main -httpStaticRoot /srv/public -httpStaticEnabled true"
 
   agent1:
     image: rasa/rasa:latest-full

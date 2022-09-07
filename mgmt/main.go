@@ -78,21 +78,21 @@ func main() {
 	// region: http routing
 
 	httpRouterActual := fasthttprouter.New()
-	// if Config.Entries["httpStaticEnabled"].Value.(bool) {
-	httpFS := &fasthttp.FS{
-		Root:       Config.Entries["httpStaticRoot"].Value.(string),
-		IndexNames: []string{Config.Entries["httpStaticIndex"].Value.(string)},
-		PathNotFound: func(ctx *fasthttp.RequestCtx) {
-			Logger.Out(LOG_NOTICE, "dead end", ctx)
-			ctx.Redirect(Config.Entries["httpStaticError"].Value.(string), 303)
-		},
-		Compress:           true,
-		AcceptByteRange:    true,
-		GenerateIndexPages: false,
-	}
+	if Config.Entries["httpStaticEnabled"].Value.(bool) {
+		httpFS := &fasthttp.FS{
+			Root:       Config.Entries["httpStaticRoot"].Value.(string),
+			IndexNames: []string{Config.Entries["httpStaticIndex"].Value.(string)},
+			PathNotFound: func(ctx *fasthttp.RequestCtx) {
+				Logger.Out(LOG_NOTICE, "dead end", ctx)
+				ctx.Redirect(Config.Entries["httpStaticError"].Value.(string), 303)
+			},
+			Compress:           true,
+			AcceptByteRange:    true,
+			GenerateIndexPages: false,
+		}
 
-	httpRouterActual.NotFound = httpFS.NewRequestHandler()
-	// }
+		httpRouterActual.NotFound = httpFS.NewRequestHandler()
+	}
 
 	httpRouterPre := fasthttprouter.New()
 	httpRouterPre.NotFound = func(ctx *fasthttp.RequestCtx) {
