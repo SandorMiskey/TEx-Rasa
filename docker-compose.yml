@@ -6,13 +6,11 @@ services:
     image: alpine:latest
     networks: ['rasa-network']
     ports:
-    - "8080:8080"
+    - "5000:5000"
     volumes:
-    - "./storage/mgmet/:/app/"
+    - "./storage/mgmt/:/srv/"
     command: >
-      # run
-      # --enable-api
-      # --cors "*"
+      sh -c "cd /srv && ./main -httpStaticRoot public"
 
   agent1:
     image: rasa/rasa:latest-full

@@ -45,15 +45,15 @@ func main() {
 		"httpLogAllErrors":       {Desc: "enable http", Type: "bool", Def: true},
 		"httpMaxRequestBodySize": {Desc: "http max request body size ", Type: "int", Def: 4 * 1024 * 1024},
 		"httpNetworkProto":       {Desc: "network protocol must be 'tcp', 'tcp4', 'tcp6', 'unix' or 'unixpacket'", Type: "string", Def: "tcp"},
-		"httpPort":               {Desc: "http port", Type: "int", Def: 8080},
-		"httpStaticEnabled":      {Desc: "enable serving static files", Type: "bool", Def: false},
-		"httpStaticRoot":         {Desc: "path to static files", Type: "string", Def: "storage/mgmt"},
+		"httpPort":               {Desc: "http port", Type: "int", Def: 5000},
+		"httpStaticEnabled":      {Desc: "enable serving static files", Type: "bool", Def: true},
+		"httpStaticRoot":         {Desc: "path to static files", Type: "string", Def: "storage/mgmt/public"},
 		"httpStaticIndex":        {Desc: "index file to serve during directory access", Type: "string", Def: "index.html"},
 		"httpStaticError":        {Desc: "location to redirect in case of 404", Type: "string", Def: "index.html"},
 		"httpTLSCert":            {Desc: "https certificate", Type: "string", Def: ""},
-		"httpTLSEnabled":         {Desc: "enable https", Type: "bool", Def: true},
+		"httpTLSEnabled":         {Desc: "enable https", Type: "bool", Def: false},
 		"httpTLSKey":             {Desc: "private key for HTTPS certificate", Type: "string", Def: ""},
-		"httpTLSPort":            {Desc: "https port", Type: "int", Def: 8081},
+		"httpTLSPort":            {Desc: "https port", Type: "int", Def: 5000},
 
 		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 7},
 	}
@@ -78,21 +78,21 @@ func main() {
 	// region: http routing
 
 	httpRouterActual := fasthttprouter.New()
-	if Config.Entries["httpStaticEnabled"].Value.(bool) {
-		httpFS := &fasthttp.FS{
-			Root:       Config.Entries["httpStaticRoot"].Value.(string),
-			IndexNames: []string{Config.Entries["httpStaticIndex"].Value.(string)},
-			PathNotFound: func(ctx *fasthttp.RequestCtx) {
-				Logger.Out(LOG_NOTICE, "dead end", ctx)
-				ctx.Redirect(Config.Entries["httpStaticError"].Value.(string), 303)
-			},
-			Compress:           true,
-			AcceptByteRange:    true,
-			GenerateIndexPages: false,
-		}
-
-		httpRouterActual.NotFound = httpFS.NewRequestHandler()
+	// if Config.Entries["httpStaticEnabled"].Value.(bool) {
+	httpFS := &fasthttp.FS{
+		Root:       Config.Entries["httpStaticRoot"].Value.(string),
+		IndexNames: []string{Config.Entries["httpStaticIndex"].Value.(string)},
+		PathNotFound: func(ctx *fasthttp.RequestCtx) {
+			Logger.Out(LOG_NOTICE, "dead end", ctx)
+			ctx.Redirect(Config.Entries["httpStaticError"].Value.(string), 303)
+		},
+		Compress:           true,
+		AcceptByteRange:    true,
+		GenerateIndexPages: false,
 	}
+
+	httpRouterActual.NotFound = httpFS.NewRequestHandler()
+	// }
 
 	httpRouterPre := fasthttprouter.New()
 	httpRouterPre.NotFound = func(ctx *fasthttp.RequestCtx) {
