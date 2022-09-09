@@ -26,30 +26,30 @@ services:
       --enable-api
       --cors "*"
       --debug
-  agent2:
-    image: rasa/rasa:latest-full
-    networks: ['rasa-network']
-    ports:
-    - "5002:5005"
-    volumes:
-    - "./storage/agent2/:/app/"
-    command: >
-      run
-      --enable-api
-      --cors "*"
-      --debug
-  agent3:
-    image: rasa/rasa:latest-full
-    networks: ['rasa-network']
-    ports:
-    - "5003:5005"
-    volumes:
-    - "./storage/agent3/:/app/"
-    command: >
-      run
-      --enable-api
-      --cors "*"
-      --debug
+  # agent2:
+  #   image: rasa/rasa:latest-full
+  #   networks: ['rasa-network']
+  #   ports:
+  #   - "5002:5005"
+  #   volumes:
+  #   - "./storage/agent2/:/app/"
+  #   command: >
+  #     run
+  #     --enable-api
+  #     --cors "*"
+  #     --debug
+  # agent3:
+  #   image: rasa/rasa:latest-full
+  #   networks: ['rasa-network']
+  #   ports:
+  #   - "5003:5005"
+  #   volumes:
+  #   - "./storage/agent3/:/app/"
+  #   command: >
+  #     run
+  #     --enable-api
+  #     --cors "*"
+  #     --debug
 
   actions:
     image: rasa/rasa-sdk:latest
