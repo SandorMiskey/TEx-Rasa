@@ -10,6 +10,8 @@ Gopkg.lock
 .rasa
 storage/mgmt/main
 storage/*/credentials.yml
+storage/*/selfsigned.key
+
 # bin
 
 # Created by https://www.toptal.com/developers/gitignore/api/go,vim,web,macos,linux,visualstudiocode,node
