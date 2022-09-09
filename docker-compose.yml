@@ -8,11 +8,13 @@ services:
     ports:
     - "5000:5000"
     volumes:
-    - "./storage/mgmt/:/srv/"
+    - "./storage/:/srv/"
     command: >
-      sh -c "cd /srv && ./main -httpStaticRoot /srv/public -httpStaticEnabled true"
+      /srv/mgmt/main
+      -httpStaticRoot /srv/mgmt/public
+      -httpStaticEnabled true
 
-  agent1:
+  agentDefault:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
