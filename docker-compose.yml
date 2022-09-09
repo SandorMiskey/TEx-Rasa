@@ -13,12 +13,23 @@ services:
       /srv/mgmt/main
       -httpStaticRoot /srv/mgmt/public
       -httpStaticEnabled true
+  proxy:
+    image: nginx:latest
+    networks: ['rasa-network']
+    ports:
+    - "8443:443"
+    volumes:
+    - "./storage/proxy/:/etc/nginx/conf.d"
+    depends_on:
+    - agentDefault
+    - mgmt
 
   agentDefault:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
     - "5001:5005"
+    - "8447:5005"
     volumes:
     - "./storage/agentDefault/:/app/"
     command: >
