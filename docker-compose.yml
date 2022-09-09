@@ -20,7 +20,7 @@ services:
     ports:
     - "5001:5005"
     volumes:
-    - "./storage/agent1/:/app/"
+    - "./storage/agentDefault/:/app/"
     command: >
       run
       --enable-api
