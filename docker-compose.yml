@@ -29,7 +29,6 @@ services:
     networks: ['rasa-network']
     ports:
     - "5001:5005"
-    - "8447:5005"
     volumes:
     - "./storage/agentDefault/:/app/"
     command: >
