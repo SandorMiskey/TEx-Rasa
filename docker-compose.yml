@@ -12,8 +12,8 @@ services:
     command: >
       /srv/mgmt/main
       -httpStaticRoot /srv/mgmt/public
-      -httpStaticEnabled true
       -dbAddr /srv/mgmt/mgmt.db
+      -httpStaticEnabled true
 
   proxy:
     image: nginx:latest
