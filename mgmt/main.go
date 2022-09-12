@@ -44,7 +44,7 @@ func main() {
 	Config = *cfg.NewConfig(os.Args[0])
 	flagSet := Config.NewFlagSet(os.Args[0])
 	flagSet.Entries = map[string]cfg.Entry{
-		"dbAddr":        {Desc: "database address", Type: "string", Def: "/Users/SMiskey/Desktop/TEx-Rasa/mgmt/rasa-mgmt.db"},
+		"dbAddr":        {Desc: "database address", Type: "string", Def: "storage/mgmt/mgmt.db"},
 		"dbName":        {Desc: "database name", Type: "string", Def: "mgmt"},
 		"dbPasswd":      {Desc: "database user password", Type: "string", Def: ""},
 		"dbPasswd_file": {Desc: "database user password", Type: "string", Def: ""},
