@@ -11,7 +11,9 @@ import (
 	"sync"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
+	"github.com/SandorMiskey/TEx-kit/db"
 	"github.com/SandorMiskey/TEx-kit/log"
+
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
 )
@@ -21,6 +23,7 @@ import (
 
 var (
 	Config cfg.Config
+	Db     *db.Db
 	Logger log.Logger
 )
 
@@ -29,6 +32,7 @@ const (
 	LOG_NOTICE syslog.Priority = log.LOG_NOTICE
 	LOG_INFO   syslog.Priority = log.LOG_INFO
 	LOG_DEBUG  syslog.Priority = log.LOG_DEBUG
+	LOG_EMERG  syslog.Priority = log.LOG_EMERG
 )
 
 // endregion: globals
@@ -40,6 +44,13 @@ func main() {
 	Config = *cfg.NewConfig(os.Args[0])
 	flagSet := Config.NewFlagSet(os.Args[0])
 	flagSet.Entries = map[string]cfg.Entry{
+		"dbAddr":        {Desc: "database address", Type: "string", Def: "/Users/SMiskey/Desktop/TEx-Rasa/mgmt/rasa-mgmt.db"},
+		"dbName":        {Desc: "database name", Type: "string", Def: "mgmt"},
+		"dbPasswd":      {Desc: "database user password", Type: "string", Def: ""},
+		"dbPasswd_file": {Desc: "database user password", Type: "string", Def: ""},
+		"dbType":        {Desc: "db type as in TEx-kit/db/db.go", Type: "int", Def: 4},
+		"dbUser":        {Desc: "database user", Type: "string", Def: "mgmt"},
+
 		"httpEnabled":            {Desc: "enable http", Type: "bool", Def: true},
 		"httpName":               {Desc: "server name in response header", Type: "string", Def: "TEx-Rasa management service"},
 		"httpLogAllErrors":       {Desc: "enable http", Type: "bool", Def: true},
@@ -51,8 +62,10 @@ func main() {
 		"httpStaticIndex":        {Desc: "index file to serve during directory access", Type: "string", Def: "index.html"},
 		"httpStaticError":        {Desc: "location to redirect in case of 404", Type: "string", Def: "index.html"},
 		"httpTLSCert":            {Desc: "https certificate", Type: "string", Def: ""},
+		"httpTLSCert_file":       {Desc: "https certificate file", Type: "string", Def: ""},
 		"httpTLSEnabled":         {Desc: "enable https", Type: "bool", Def: false},
 		"httpTLSKey":             {Desc: "private key for HTTPS certificate", Type: "string", Def: ""},
+		"httpTLSKey_file":        {Desc: "httpTLSKey file", Type: "string", Def: ""},
 		"httpTLSPort":            {Desc: "https port", Type: "int", Def: 5000},
 
 		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 7},
@@ -72,9 +85,34 @@ func main() {
 	defer Logger.Close()
 	_, _ = Logger.NewCh(log.ChConfig{Severity: &logLevel})
 
-	Logger.Out(LOG_DEBUG, Config)
+	// Logger.Out(LOG_DEBUG, spew.Sdump(Config))
 
 	// endregion: logger
+	// region: db
+
+	if db.DbType(Config.Entries["dbType"].Value.(int)) == db.Postgres {
+		db.Defaults = db.DefaultsPostgres // TODO: this goes to TEx-kit/db/db.go
+	}
+
+	dbConfig := db.Config{
+		Addr:   Config.Entries["dbAddr"].Value.(string),
+		DBName: Config.Entries["dbName"].Value.(string),
+		Logger: Logger,
+		// Params: nil,
+		Passwd: Config.Entries["dbPasswd"].Value.(string),
+		Type:   db.DbType(Config.Entries["dbType"].Value.(int)),
+		User:   Config.Entries["dbUser"].Value.(string),
+	}
+
+	Db, err = dbConfig.Open()
+	defer Db.Close()
+
+	if err != nil {
+		Logger.Out(LOG_EMERG, err)
+		panic(err)
+	}
+
+	// endregion: db
 	// region: http routing
 
 	httpRouterActual := fasthttprouter.New()
