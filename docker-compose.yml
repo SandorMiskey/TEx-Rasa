@@ -13,7 +13,7 @@ services:
       /srv/mgmt/main
       -httpStaticRoot /srv/mgmt/public
       -httpStaticEnabled true
-      -dbAddr mgmt.db
+      -dbAddr /srv/mgmt/mgmt.db
 
   proxy:
     image: nginx:latest
