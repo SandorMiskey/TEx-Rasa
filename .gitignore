@@ -11,6 +11,7 @@ Gopkg.lock
 storage/mgmt/main
 storage/*/credentials.yml
 storage/*/selfsigned.key
+tmp
 
 # bin
 
