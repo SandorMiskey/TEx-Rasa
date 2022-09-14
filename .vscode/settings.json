@@ -1,79 +1,80 @@
 {
-	"cSpell.words": [
-		"erba",
-		"fasthttprouter",
-		"Loglevel",
-		"mgmt",
-		"Rasa"
-	],
-	"cSpell.ignoreWords": [
-		"Atoi",
-		"buaazp",
-		"Cleartext",
-		"EMERG",
-		"Errorf",
-		"GOMAXPROCS",
-		"HTTPPORT",
-		"INFILE",
-		"Itoa",
-		"Lmsgprefix",
-		"Sdump",
-		"davecgh",
-		"dbname",
-		"dgrijalva",
-		"expvar",
-		"fileflags",
-		"fileperm",
-		"gorm",
-		"libpq",
-		"mattn",
-		"mydb",
-		"namsral",
-		"nurl",
-		"peterbourgon",
-		"quux",
-		"sslcert",
-		"sslkey",
-		"sslmode",
-		"sslrootcert",
-		"stmnt",
-		"strconv",
-		"struct",
-		"swaggerapi",
-		"tecommercedev",
-		"trustone",
-		"valyala",
-		"wmenu"
-	],
-	"editor.foldingStrategy": "indentation",
-	"files.exclude": {
-		"**/*.fasthttp.gz": true,
-		"**/main.wasm": true
-	},
-	"html.format.enable": false,
-	// "files.associations": {
-	// 	"*.gocc": "go",
-	// },
-	// "go.toolsEnvVars": {
-	// 	"GOARCH": "wasm",
-	// 	"GOOS": "js",
-	// },
-	// "go.testEnvVars": {
+  "cSpell.words": [
+    "erba",
+    "fasthttprouter",
+    "Loglevel",
+    "mgmt",
+    "Rasa",
+    "syslogd"
+  ],
+  "cSpell.ignoreWords": [
+    "Atoi",
+    "buaazp",
+    "Cleartext",
+    "EMERG",
+    "Errorf",
+    "GOMAXPROCS",
+    "HTTPPORT",
+    "INFILE",
+    "Itoa",
+    "Lmsgprefix",
+    "Sdump",
+    "davecgh",
+    "dbname",
+    "dgrijalva",
+    "expvar",
+    "fileflags",
+    "fileperm",
+    "gorm",
+    "libpq",
+    "mattn",
+    "mydb",
+    "namsral",
+    "nurl",
+    "peterbourgon",
+    "quux",
+    "sslcert",
+    "sslkey",
+    "sslmode",
+    "sslrootcert",
+    "stmnt",
+    "strconv",
+    "struct",
+    "swaggerapi",
+    "tecommercedev",
+    "trustone",
+    "valyala",
+    "wmenu"
+  ],
+  "editor.foldingStrategy": "indentation",
+  "files.exclude": {
+    "**/*.fasthttp.gz": true,
+    "**/main.wasm": true
+  },
+  "html.format.enable": false
+  // "files.associations": {
+  // 	"*.gocc": "go",
+  // },
+  // "go.toolsEnvVars": {
+  // 	"GOARCH": "wasm",
+  // 	"GOOS": "js",
+  // },
+  // "go.testEnvVars": {
 
-	// 	"GOARCH": "wasm",
-	// 	"GOOS": "js",
-	// },
-	// "markdownlint.config": {
-	// 	"MD033": false,
-	// 	"MD040": false
-	// },
-	// "markdown.extension.print.theme": "dark",
-	// "markdown.extension.print.onFileSave": true,
-	// "[markdown]": {
-	// 	"editor.wordWrap": "wordWrapColumn",
-	// 	"editor.wordWrapColumn": 210
-	// },
-	// "gopls": {
-	// 	"build.directoryFilters": ["-cmd/shared"]
-	// },
+  // 	"GOARCH": "wasm",
+  // 	"GOOS": "js",
+  // },
+  // "markdownlint.config": {
+  // 	"MD033": false,
+  // 	"MD040": false
+  // },
+  // "markdown.extension.print.theme": "dark",
+  // "markdown.extension.print.onFileSave": true,
+  // "[markdown]": {
+  // 	"editor.wordWrap": "wordWrapColumn",
+  // 	"editor.wordWrapColumn": 210
+  // },
+  // "gopls": {
+  // 	"build.directoryFilters": ["-cmd/shared"]
+  // },
 }
