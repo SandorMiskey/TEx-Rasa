@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "2b83fb3f-d50f-4136-9bcc-f2f2a663f972",
+		"name": "Rasa SDK - Action Server Endpoint",
+		"description": "API of the action server which is used by Rasa to execute custom actions.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12083801"
+	},
+	"item": [
+		{
+			"name": "Core request to execute a custom action",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"next_action\": \"nisi irure\",\n  \"sender_id\": \"exercitati\",\n  \"tracker\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Tracker not found in the OpenAPI spec\"\n  },\n  \"domain\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Domain not found in the OpenAPI spec\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Rasa Core sends a request to the action server to execute a certain custom action. As a response to the action call from Core, you can modify the tracker, e.g. by setting slots and send responses back to the user."
+			},
+			"response": [
+				{
+					"name": "Action was executed succesfully.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"next_action\": \"nisi irure\",\n  \"sender_id\": \"exercitati\",\n  \"tracker\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Tracker not found in the OpenAPI spec\"\n  },\n  \"domain\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Domain not found in the OpenAPI spec\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"events\": [\n    {\n      \"value\": \"reference ./rasa.yml#/components/schemas/Event not found in the OpenAPI spec\"\n    },\n    {\n      \"value\": \"reference ./rasa.yml#/components/schemas/Event not found in the OpenAPI spec\"\n    }\n  ],\n  \"responses\": [\n    {\n      \"text\": \"commodo Ut id\"\n    },\n    {\n      \"text\": \"ex pariatur culpa tempor\"\n    }\n  ]\n}"
+				},
+				{
+					"name": "Action execution was rejected. This is the same as returning an `ActionExecutionRejected` event.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"next_action\": \"nisi irure\",\n  \"sender_id\": \"exercitati\",\n  \"tracker\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Tracker not found in the OpenAPI spec\"\n  },\n  \"domain\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Domain not found in the OpenAPI spec\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"action_name\": \"amet Ut\",\n  \"error\": \"sit anim\"\n}"
+				},
+				{
+					"name": "The action server encountered an exception while running the action.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"next_action\": \"nisi irure\",\n  \"sender_id\": \"exercitati\",\n  \"tracker\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Tracker not found in the OpenAPI spec\"\n  },\n  \"domain\": {\n    \"value\": \"reference ./rasa.yml#/components/schemas/Domain not found in the OpenAPI spec\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain"
+						}
+					],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5055/webhook",
+			"type": "string"
+		}
+	]
+}
