@@ -44,12 +44,12 @@ func main() {
 	Config = *cfg.NewConfig(os.Args[0])
 	flagSet := Config.NewFlagSet(os.Args[0])
 	flagSet.Entries = map[string]cfg.Entry{
-		"dbAddr":        {Desc: "database address", Type: "string", Def: "/app/mgmt.db"},
-		"dbName":        {Desc: "database name", Type: "string", Def: "mgmt"},
-		"dbPasswd":      {Desc: "database user password", Type: "string", Def: ""},
-		"dbPasswd_file": {Desc: "database user password", Type: "string", Def: ""},
-		"dbType":        {Desc: "db type as in TEx-kit/db/db.go", Type: "int", Def: 4},
-		"dbUser":        {Desc: "database user", Type: "string", Def: "mgmt"},
+		// "dbAddr":        {Desc: "database address", Type: "string", Def: "/app/mgmt.db"},
+		// "dbName":        {Desc: "database name", Type: "string", Def: "mgmt"},
+		// "dbPasswd":      {Desc: "database user password", Type: "string", Def: ""},
+		// "dbPasswd_file": {Desc: "database user password", Type: "string", Def: ""},
+		// "dbType":        {Desc: "db type as in TEx-kit/db/db.go", Type: "int", Def: 4},
+		// "dbUser":        {Desc: "database user", Type: "string", Def: "mgmt"},
 
 		"httpEnabled":            {Desc: "enable http", Type: "bool", Def: true},
 		"httpName":               {Desc: "server name in response header", Type: "string", Def: "TEx-Rasa management service"},

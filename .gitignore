@@ -8,8 +8,8 @@ Gopkg.lock
 .config
 .keras
 .rasa
+credentials.yml
 storage/engine/main
-storage/*/credentials.yml
 storage/*/selfsigned.key
 
 # bin
