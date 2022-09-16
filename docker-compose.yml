@@ -8,15 +8,12 @@ services:
     image: rasa/rasa:latest-full
     networks: ['rasa-network']
     ports:
-    - "5001:5005"
+    - "5000:5000"
     volumes:
     - "./storage/engine/:/app/"
-    entrypoint: /app/bootstrap.sh
-    # command: >
-    #   run
-    #   --enable-api
-    #   --cors "*"
-    #   --debug
+    entrypoint: /app/main
+    # environment:
+    # - HTTPPORT=5000
 
   actions:
     image: rasa/rasa-sdk:latest
@@ -33,19 +30,6 @@ services:
     - "8000:8000"
 
   # region: obsolete
-
-  # mgmt:
-  #   image: alpine:latest
-  #   networks: ['rasa-network']
-  #   ports:
-  #   - "5000:5000"
-  #   volumes:
-  #   - "./storage/:/srv/"
-  #   command: >
-  #     /srv/mgmt/main
-  #     -httpStaticRoot /srv/mgmt/public
-  #     -dbAddr /srv/mgmt/mgmt.db
-  #     -httpStaticEnabled true
 
   # proxy:
   #   image: nginx:latest

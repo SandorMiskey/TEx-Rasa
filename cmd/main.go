@@ -44,7 +44,7 @@ func main() {
 	Config = *cfg.NewConfig(os.Args[0])
 	flagSet := Config.NewFlagSet(os.Args[0])
 	flagSet.Entries = map[string]cfg.Entry{
-		"dbAddr":        {Desc: "database address", Type: "string", Def: "storage/mgmt/mgmt.db"},
+		"dbAddr":        {Desc: "database address", Type: "string", Def: "/app/mgmt.db"},
 		"dbName":        {Desc: "database name", Type: "string", Def: "mgmt"},
 		"dbPasswd":      {Desc: "database user password", Type: "string", Def: ""},
 		"dbPasswd_file": {Desc: "database user password", Type: "string", Def: ""},
@@ -58,7 +58,7 @@ func main() {
 		"httpNetworkProto":       {Desc: "network protocol must be 'tcp', 'tcp4', 'tcp6', 'unix' or 'unixpacket'", Type: "string", Def: "tcp"},
 		"httpPort":               {Desc: "http port", Type: "int", Def: 5000},
 		"httpStaticEnabled":      {Desc: "enable serving static files", Type: "bool", Def: true},
-		"httpStaticRoot":         {Desc: "path to static files", Type: "string", Def: "storage/mgmt/public"},
+		"httpStaticRoot":         {Desc: "path to static files", Type: "string", Def: "/app/public"},
 		"httpStaticIndex":        {Desc: "index file to serve during directory access", Type: "string", Def: "index.html"},
 		"httpStaticError":        {Desc: "location to redirect in case of 404", Type: "string", Def: "index.html"},
 		"httpTLSCert":            {Desc: "https certificate", Type: "string", Def: ""},
@@ -90,27 +90,27 @@ func main() {
 	// endregion: logger
 	// region: db
 
-	if db.DbType(Config.Entries["dbType"].Value.(int)) == db.Postgres {
-		db.Defaults = db.DefaultsPostgres // TODO: this goes to TEx-kit/db/db.go
-	}
+	// if db.DbType(Config.Entries["dbType"].Value.(int)) == db.Postgres {
+	// 	db.Defaults = db.DefaultsPostgres // TODO: this goes to TEx-kit/db/db.go
+	// }
 
-	dbConfig := db.Config{
-		Addr:   Config.Entries["dbAddr"].Value.(string),
-		DBName: Config.Entries["dbName"].Value.(string),
-		Logger: Logger,
-		// Params: nil,
-		Passwd: Config.Entries["dbPasswd"].Value.(string),
-		Type:   db.DbType(Config.Entries["dbType"].Value.(int)),
-		User:   Config.Entries["dbUser"].Value.(string),
-	}
+	// dbConfig := db.Config{
+	// 	Addr:   Config.Entries["dbAddr"].Value.(string),
+	// 	DBName: Config.Entries["dbName"].Value.(string),
+	// 	Logger: Logger,
+	// 	// Params: nil,
+	// 	Passwd: Config.Entries["dbPasswd"].Value.(string),
+	// 	Type:   db.DbType(Config.Entries["dbType"].Value.(int)),
+	// 	User:   Config.Entries["dbUser"].Value.(string),
+	// }
 
-	Db, err = dbConfig.Open()
-	defer Db.Close()
+	// Db, err = dbConfig.Open()
+	// defer Db.Close()
 
-	if err != nil {
-		Logger.Out(LOG_EMERG, err)
-		panic(err)
-	}
+	// if err != nil {
+	// 	Logger.Out(LOG_EMERG, err)
+	// 	panic(err)
+	// }
 
 	// endregion: db
 	// region: http routing

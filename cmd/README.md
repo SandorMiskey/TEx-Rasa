@@ -4,6 +4,7 @@
 
 ## TODO
 
+* get agents dir form cli/env
 * create instance/domain
 * edit/show instance/domain data
   * training data

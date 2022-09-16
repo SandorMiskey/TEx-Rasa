@@ -8,7 +8,7 @@ Gopkg.lock
 .config
 .keras
 .rasa
-storage/mgmt/main
+storage/engine/main
 storage/*/credentials.yml
 storage/*/selfsigned.key
 
