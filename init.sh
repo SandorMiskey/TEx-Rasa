@@ -2,7 +2,9 @@
 
 # go module
 
-
+cd cmd
+go mod init github.com/SandorMiskey/TEx-Rasa/cmd
+go mod tidy
 
 # Create virtual python3 environment and activate it
 
@@ -14,3 +16,9 @@ source $VENV/bin/activate
 
 $VENV/bin/pip3 install -U pip
 $VENV/bin/pip3 install rasa
+
+# self signed tls cert
+
+# - gen
+# - move to storage/proxy
+# - move to storage/engine

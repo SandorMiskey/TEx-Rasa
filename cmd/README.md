@@ -29,3 +29,4 @@
   * nlg
   * logging facility (with syslogd docker or syslog listener in the mgmt process)
 * implement Logger.Printf(), set fasthttp.Server() Logger.
+* self signed cert creation in init for proxy and main (check init.sh)
