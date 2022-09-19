@@ -4,7 +4,6 @@
 
 ## TODO
 
-* validate httpStaticRoot if httpStaticEnabled on start
 * get agents dir form cli/env
 * create instance/domain
 * edit/show instance/domain data
@@ -28,5 +27,6 @@
   * lock store
   * nlg
   * logging facility (with syslogd docker or syslog listener in the mgmt process)
+* validate httpStaticRoot if httpStaticEnabled on start
 * implement Logger.Printf(), set fasthttp.Server() Logger.
 * self signed cert creation in init for proxy and main (check init.sh)

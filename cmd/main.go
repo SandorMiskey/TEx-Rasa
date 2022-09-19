@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
-	"github.com/SandorMiskey/TEx-kit/db"
+	// "github.com/SandorMiskey/TEx-kit/db"
 	"github.com/SandorMiskey/TEx-kit/log"
 
 	"github.com/buaazp/fasthttprouter"
@@ -23,7 +23,7 @@ import (
 
 var (
 	Config cfg.Config
-	Db     *db.Db
+	// Db     *db.Db
 	Logger log.Logger
 )
 
