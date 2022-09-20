@@ -79,7 +79,6 @@ func main() {
 	// region: routing
 
 	Logger.Out(LOG_DEBUG, spew.Sdump(flagSet.FlagSet))
-	Logger.Out(LOG_DEBUG, subArgs)
 
 	switch subCommand {
 	case "copy":
