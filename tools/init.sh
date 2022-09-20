@@ -7,7 +7,6 @@ then
 	echo "\$ROOT is empty"
 	exit
 fi
-exit
 
 # go modules
 
