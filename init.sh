@@ -3,7 +3,7 @@
 # go module
 
 cd cmd
-go mod init github.com/SandorMiskey/TEx-Rasa/cmd
+go mod init github.com/SandorMiskey/TEx-Rasa
 go mod tidy
 
 # Create virtual python3 environment and activate it

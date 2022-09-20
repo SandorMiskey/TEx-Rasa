@@ -10,9 +10,9 @@ Gopkg.lock
 .rasa
 credentials.yml
 storage/engine/main
-storage/*/dhparam.pem
-storage/*/selfsigned.crt
-storage/*/selfsigned.key
+dhparam.pem
+selfsigned.crt
+selfsigned.key
 
 # bin
 
@@ -317,8 +317,8 @@ db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
-instance/
-.webassets-cache
+# instance/
+# .webassets-cache
 
 # Scrapy stuff:
 .scrapy
