@@ -7,7 +7,7 @@ import (
 	"log/syslog"
 	"os"
 
-	"github.com/SandorMiskey/TEx-Rasa/instance"
+	// "github.com/SandorMiskey/TEx-Rasa/instance"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
@@ -113,7 +113,7 @@ func main() {
 		// for _, f := range files {
 		// 	fmt.Println(f.Name())
 		// }
-		instance.List()
+		// instance.List()
 	default:
 		panic("no such subcommand '" + subCommand)
 	}
