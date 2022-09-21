@@ -13,7 +13,8 @@ services:
     - "./storage/engine/:/app/"
     entrypoint: /app/main
     command: >
-      version
+      exec
+      -subArgs --version
     # environment:
     # - HTTPPORT=5000
 

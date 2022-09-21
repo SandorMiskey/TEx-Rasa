@@ -4,7 +4,6 @@
 
 ## TODO
 
-* rasa version in docker
 * init instance
 * copy instance
 * destroy instance
