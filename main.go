@@ -3,9 +3,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log/syslog"
 	"os"
+	"os/exec"
 
 	// "github.com/SandorMiskey/TEx-Rasa/instance"
 
@@ -54,6 +56,7 @@ func main() {
 	case "destroy":
 	case "init":
 	case "list":
+	case "version":
 	default:
 		fmt.Println("no such subcommand '" + subCommand + "', usage: " + Config.Name + " {init,destroy,list} [options] [args]")
 		os.Exit(1)
@@ -63,7 +66,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	subArgs := flagSet.FlagSet.Args()
+	// subArgs := flagSet.FlagSet.Args()
 
 	// endregion: cli
 	// region: logger
@@ -104,15 +107,49 @@ func main() {
 		*/
 
 	case "list":
-		// files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
+	// files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-		// for _, f := range files {
-		// 	fmt.Println(f.Name())
-		// }
-		// instance.List()
+	// for _, f := range files {
+	// 	fmt.Println(f.Name())
+	// }
+	// instance.List()
+	case "version":
+		cmd := exec.Command("rasa", "--version")
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			panic(err)
+		}
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			panic(err)
+		}
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			panic(err)
+		}
+		cmd.Start()
+		stdin.Close()
+		scannerErr := bufio.NewScanner(stderr)
+		for scannerErr.Scan() {
+			fmt.Printf("commonGwExecuteActual() stderr: %s\n", scannerErr.Text())
+		}
+		if err := scannerErr.Err(); err != nil {
+			panic(err)
+		}
+		scannerOut := bufio.NewScanner(stdout)
+		for scannerOut.Scan() {
+			fmt.Println(string(scannerOut.Bytes()))
+		}
+		if err := scannerOut.Err(); err != nil {
+			panic(err)
+		}
+		if err := cmd.Wait(); err != nil {
+			panic(err)
+		}
+
 	default:
 		panic("no such subcommand '" + subCommand)
 	}

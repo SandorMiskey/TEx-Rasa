@@ -12,6 +12,8 @@ services:
     volumes:
     - "./storage/engine/:/app/"
     entrypoint: /app/main
+    command: >
+      version
     # environment:
     # - HTTPPORT=5000
 
