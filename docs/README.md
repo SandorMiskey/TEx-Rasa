@@ -5,10 +5,18 @@
 ## TODO
 
 * init instance
+* train instance
+* api
+  * version
+  * exec
+  * init
+  * train
+* list instances
+* run
+  * instance
+  * all
 * copy instance
 * destroy instance
-* list instances
-* api for init/destroy/list
 * update instance config/data
   * enable/disable instance
   * nlu mode true/false
@@ -18,14 +26,6 @@
   * actions
   * channel connectors
   * (markers)
-* train instance
-* start stop instance(s)
-  * specific instance
-  * all instances
-* api
-  * start enabled
-  * rasa api gw
-* client/chat endpoint
 * implement external
   * action server management
   * tracker store
@@ -34,6 +34,7 @@
   * lock store
   * nlg
   * logging facility (with syslogd docker or syslog listener in the mgmt process)
+* client/chat endpoint?
 
 * get agents dir form cli/env
 * set rasa specific log levels az in <https://rasa.com/docs/rasa/command-line-interface#log-level>

@@ -1,6 +1,6 @@
 // region: packages
 
-package rasaCmd
+package rasa
 
 import (
 	"bufio"

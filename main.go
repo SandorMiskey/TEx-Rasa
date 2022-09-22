@@ -11,7 +11,7 @@ import (
 	"github.com/SandorMiskey/TEx-kit/log"
 	"github.com/davecgh/go-spew/spew"
 
-	"github.com/SandorMiskey/TEx-Rasa/rasaCmd"
+	"github.com/SandorMiskey/TEx-Rasa/rasa"
 )
 
 // endregion: packages
@@ -100,8 +100,8 @@ func main() {
 	// endregion: logger
 	// region: init modules
 
-	rasaCmd.Config = config
-	rasaCmd.Logger = logger
+	rasa.Config = config
+	rasa.Logger = logger
 
 	// endregion: init modules
 	// region: routing
@@ -116,19 +116,10 @@ func main() {
 		*/
 
 	case "exec":
-		rasaCmd.Exec(subArgs, nil)
+		rasa.Exec(subArgs, nil)
 	case "init":
-		/*
-			--init_dir (root/instance)
-			--no_prompt
 
-			rasaCMD
-			instanceRoot
-			instanceEnabled
-			subArg = list of instances
-		*/
-
-		rasaCmd.Exec([]string{"init", "-h", rasaCmd.LogLevel()}, nil)
+		rasa.Exec([]string{"init", "-h", rasa.LogLevel()}, nil)
 	case "list":
 		/*
 			files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
@@ -142,7 +133,7 @@ func main() {
 			instance.List()
 		*/
 	case "version":
-		rasaCmd.Exec([]string{"--version"}, nil)
+		rasa.Exec([]string{"--version"}, nil)
 	default:
 		panic("no such subcommand '" + subCommand)
 	}
