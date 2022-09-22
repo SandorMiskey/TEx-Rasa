@@ -111,7 +111,7 @@ func Exec(subCmd []string, data []byte) (result []byte, err error) {
 		result = append(result, scanOut.Bytes()...)
 		result = append(result, '\n')
 	}
-	Logger.Out(log.LOG_DEBUG, "rasaCmd.Exec() result", "\n"+string(result))
+	Logger.Out(log.LOG_NOTICE, "rasaCmd.Exec() result", "\n"+string(result))
 	if err = scanOut.Err(); err != nil {
 		Logger.Out(log.LOG_ERR, err)
 		return

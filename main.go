@@ -128,7 +128,7 @@ func main() {
 			subArg = list of instances
 		*/
 
-		rasaCmd.Exec([]string{"init", "-h"}, nil)
+		rasaCmd.Exec([]string{"init", "-h", rasaCmd.LogLevel()}, nil)
 	case "list":
 		/*
 			files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
