@@ -3,8 +3,7 @@
 package rasa
 
 import (
-	"bufio"
-	"os/exec"
+	"errors"
 
 	"github.com/SandorMiskey/TEx-kit/log"
 )
@@ -12,122 +11,59 @@ import (
 // endregion: packages
 // region: messages
 
-var ()
+var (
+	ErrInvalidRasaPrompt = errors.New("invalid rasaPrompt")
+)
 
 // endregion: messages
 
-func Init(subCmd []string, data []byte) (result []byte, err error) {
+func Init() (result []byte, err error) {
 
 	/*
-		--init_dir (root/instance)
-		--no_prompt
+		validate instance name
 
-		rasaCMD
-		instanceRoot
-		instanceEnabled
-		subArg = list of instances
+		config:
+		- instanceEnabled
+		- port
+		- nlu only
+
+		validate if exists
+
+		subArg = list of instances -> --init-dir
+		create instance dir
+		cd instance dir
+
+		exec
 	*/
 
 	// region: validations
 
-	// rasa command
-
-	rasaCmd, rasaCmdOk := Config.Entries["rasaCmd"].Value.(string)
-	Logger.Out(log.LOG_DEBUG, "rasaCmd Exec() rasaCmd", rasaCmd)
-
-	if !rasaCmdOk {
-		err = ErrInvalidRasaCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if len(rasaCmd) == 0 {
-		err = ErrInvalidRasaCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-
-	// subcommand
-
-	Logger.Out(log.LOG_DEBUG, "rasaCmd Exec() subCmd", subCmd)
-
-	if len(subCmd) == 0 {
-		err = ErrInvalidSubCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if len(subCmd[0]) == 0 {
-		err = ErrInvalidSubCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-
-	// data
-
-	Logger.Out(log.LOG_DEBUG, "rasaCmd Exec() data", data)
-
 	// TODO
-	// - more on rasaCmd and subCmd
-	// - search for appearance of '..' pattern
 
 	// endregion: validations
-	// region: compile w/ ins and outs
+	// region: no prompt
 
-	cmd := exec.Command(rasaCmd, subCmd...)
-
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
+	prompt := "--no-prompt"
+	if _, ok := Config.Entries["rasaPrompt"].Value.(bool); !ok {
+		err = ErrInvalidRasaPrompt
 		Logger.Out(log.LOG_ERR, err)
 		return
 	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
+	if Config.Entries["rasaPrompt"].Value.(bool) {
+		prompt = ""
 	}
 
-	// endregion: compile
-	// region: exec
+	// endregion: no prompt
+	// region: execute
 
-	data = append(data, '\n')
-	cmd.Start()
-	stdin.Write(data)
-	stdin.Close()
-
-	// endregion: exec
-	// region: scan stderr
-
-	scanErr := bufio.NewScanner(stderr)
-	for scanErr.Scan() {
-		Logger.Out(log.LOG_WARNING, scanErr.Text())
-	}
-	if err := scanErr.Err(); err != nil {
-		Logger.Out(log.LOG_ERR, err)
-	}
-
-	// endregion: stderr
-	// region: scan stdout
-
-	scanOut := bufio.NewScanner(stdout)
-	for scanOut.Scan() {
-		result = append(result, scanOut.Bytes()...)
-		result = append(result, '\n')
-	}
-	Logger.Out(log.LOG_NOTICE, "rasaCmd.Exec() result", "\n"+string(result))
-	if err = scanOut.Err(); err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if err = cmd.Wait(); err != nil {
+	if err = Wd(); err != nil {
 		Logger.Out(log.LOG_ERR, err)
 		return
 	}
 
-	// endregion: stdout
+	Exec([]string{"init", prompt, "-h", LogLevel()}, nil)
+
+	// endregion: execute
 
 	return
 }

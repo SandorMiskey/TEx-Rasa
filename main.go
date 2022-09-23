@@ -48,10 +48,9 @@ func main() {
 	// region: flag set
 
 	config := *cfg.NewConfig(os.Args[0])
-	flagSet := config.NewFlagSet(config.Name + " " + subCommand)
-	flagSet.Arguments = os.Args[2:]
-	flagSet.Entries = map[string]cfg.Entry{
-		// "instanceRoot": {Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"},
+	fs := config.NewFlagSet(config.Name + " " + subCommand)
+	fs.Arguments = os.Args[2:]
+	fs.Entries = map[string]cfg.Entry{
 		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 7},
 		"subArgs":  {Desc: "appended to the tail, use when you want to pass something begins with -", Type: "string", Def: ""},
 	}
@@ -60,18 +59,21 @@ func main() {
 	case "copy":
 	case "destroy":
 	case "exec":
-		flagSet.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 	case "init":
-		flagSet.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "instance is enabled or not", Type: "bool", Def: true}
+		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
+		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings", Type: "bool", Def: false}
 	case "list":
 	case "version":
-		flagSet.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 	default:
 		fmt.Println("no such subcommand '" + subCommand + "', usage: " + config.Name + " {init,destroy,list...} [options] [args]")
 		os.Exit(1)
 	}
 
-	err := flagSet.ParseCopy()
+	err := fs.ParseCopy()
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +81,7 @@ func main() {
 	// endregion: flag set
 	// region: tail
 
-	subArgs := flagSet.FlagSet.Args()
+	subArgs := fs.FlagSet.Args()
 	if subSubArgs := config.Entries["subArgs"].Value.(string); len(subSubArgs) != 0 {
 		subArgs = append(subArgs, subSubArgs)
 	}
@@ -106,7 +108,7 @@ func main() {
 	// endregion: init modules
 	// region: routing
 
-	logger.Out(LOG_DEBUG, spew.Sdump(flagSet.FlagSet))
+	logger.Out(LOG_DEBUG, spew.Sdump(fs.FlagSet))
 
 	switch subCommand {
 	case "copy":
@@ -118,8 +120,7 @@ func main() {
 	case "exec":
 		rasa.Exec(subArgs, nil)
 	case "init":
-
-		rasa.Exec([]string{"init", "-h", rasa.LogLevel()}, nil)
+		rasa.Init()
 	case "list":
 		/*
 			files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
