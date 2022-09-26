@@ -8,7 +8,6 @@
   * list
   * validate name
   * register
-  * cd instance dir
 * init instance
 * train instance
 * api
@@ -16,10 +15,13 @@
   * version
   * exec
   * init
+    * buffer output
   * train
+    * buffer output
 * run
-  * instance
-  * all
+  * rasa run instance
+  * instance run foobar
+  * instance run (all)
 * copy instance
 * destroy instance
 * update instance config/data
@@ -38,11 +40,15 @@
   * model store
   * lock store
   * nlg
-  * logging facility (with syslogd docker or syslog listener in the mgmt process)
+  * logging facility
+    * direct logs there (conditional, flags for that)
+    * direct rasa output there, like in `rasa run -- use-syslog --syslog-(address|port|protocol)
 * proxy endpoint
 * client/chat endpoint?
 
-* locking when register/init/copy/destroy instance
+* api locking
+  * when register/init/copy/destroy instance
+  * when run instance (sync.WaitGroup?)
 * set rasa library log levels az in <https://rasa.com/docs/rasa/command-line-interface#log-level>
 * validate httpStaticRoot if httpStaticEnabled on start
 * implement Logger.Printf(), set fasthttp.Server() Logger.

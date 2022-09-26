@@ -20,14 +20,13 @@ var (
 func Init() (result []byte, err error) {
 
 	/*
-		validate instance name
-
 		config:
 		- instanceEnabled
 		- port
 		- nlu only
 
 		validate if exists
+		validate instance name
 
 		subArg = list of instances -> --init-dir
 		create instance dir
@@ -43,27 +42,30 @@ func Init() (result []byte, err error) {
 	// endregion: validations
 	// region: no prompt
 
-	prompt := "--no-prompt"
-	if _, ok := Config.Entries["rasaPrompt"].Value.(bool); !ok {
-		err = ErrInvalidRasaPrompt
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if Config.Entries["rasaPrompt"].Value.(bool) {
-		prompt = ""
-	}
+	// prompt := "--no-prompt"
+	// if _, ok := Config.Entries["rasaPrompt"].Value.(bool); !ok {
+	// 	err = ErrInvalidRasaPrompt
+	// 	Logger.Out(log.LOG_ERR, err)
+	// 	return
+	// }
+	// if Config.Entries["rasaPrompt"].Value.(bool) {
+	// 	prompt = ""
+	// }
 
 	// endregion: no prompt
 	// region: execute
 
-	if err = Wd(); err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
+	// if err = Wd(); err != nil {
+	// 	Logger.Out(log.LOG_ERR, err)
+	// 	return
+	// }
 
-	Exec([]string{"init", prompt, "-h", LogLevel()}, nil)
+	result, err = Exec([]string{"init", "--no-prompt", logLevel(), "-h"}, nil)
+	if err != nil {
+		Logger.Out(log.LOG_ERR, "rasa.Init()", err)
+	}
+	return
 
 	// endregion: execute
 
-	return
 }

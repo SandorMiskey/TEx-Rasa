@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"log/syslog"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/SandorMiskey/TEx-Rasa/rasa"
 )
@@ -38,39 +39,60 @@ func main() {
 
 	// region: subcommand
 
-	if len(os.Args) < 2 {
-		fmt.Println("subcommand expected")
+	// TODO: list subcommands
+
+	re := regexp.MustCompile(`.*/`)
+	cmd := re.ReplaceAllString(os.Args[0], "")
+
+	help := func() {
+		fmt.Println("one of these subcommands expected:")
+		fmt.Println("	- instanceList: blah blah blah...")
+		fmt.Println("	- rasaExec")
+		fmt.Println("	- rasaInit")
+		fmt.Println("	- rasaVersion")
+		fmt.Println("")
+		fmt.Println("use `" + cmd + " subcommand --help` for further info")
 		os.Exit(1)
 	}
-	subCommand := os.Args[1]
+	if len(os.Args) < 2 || strings.HasPrefix(os.Args[1], "-") {
+		help()
+	}
 
 	// endregion: subcommand
 	// region: flag set
 
-	config := *cfg.NewConfig(os.Args[0])
-	fs := config.NewFlagSet(config.Name + " " + subCommand)
+	config := *cfg.NewConfig(cmd)
+	fs := config.NewFlagSet(config.Name + " " + os.Args[1])
 	fs.Arguments = os.Args[2:]
 	fs.Entries = map[string]cfg.Entry{
-		"logLevel": {Desc: "Logger min severity", Type: "int", Def: 7},
-		"subArgs":  {Desc: "appended to the tail, use when you want to pass something begins with -", Type: "string", Def: ""},
+		"consoleEnabled":   {Desc: "writes standard output to console", Type: "bool", Def: false},
+		"logFileEnabled":   {Desc: "writes logs to file", Type: "bool", Def: false},
+		"logFileLevel":     {Desc: "min severity for logs written into file", Type: "int", Def: 7},
+		"logFileOutput":    {Desc: "logFileEnabled destination", Type: "string", Def: "./log"},
+		"logStdoutEnabled": {Desc: "writes logs to stdout", Type: "bool", Def: false},
+		"logStdoutLevel":   {Desc: "min severity for logs written to stdout", Type: "int", Def: 7},
+		"logStderrEnabled": {Desc: "writes logs to stderr", Type: "bool", Def: true},
+		"logStderrLevel":   {Desc: "min severity for logs written to stderr", Type: "int", Def: 7},
+		"logSyslogEnabled": {Desc: "writes logs to local syslog", Type: "bool", Def: true},
+		"logSyslogLevel":   {Desc: "min severity for logs written to syslog", Type: "int", Def: 7},
+		"subArgs":          {Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""},
 	}
 
-	switch subCommand {
-	case "copy":
-	case "destroy":
-	case "exec":
-		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
-	case "init":
-		fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "instance is enabled or not", Type: "bool", Def: true}
+	subCmd := strings.ToLower(os.Args[1])
+	switch subCmd {
+	case "instancelist":
 		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
+	case "rasaexec":
 		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
-		fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings", Type: "bool", Def: false}
-	case "list":
-	case "version":
+	// case "rasainit":
+	// 	fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "instance is enabled or not", Type: "bool", Def: true}
+	// 	fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
+	// 	fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+	// 	fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
+	case "rasaversion":
 		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 	default:
-		fmt.Println("no such subcommand '" + subCommand + "', usage: " + config.Name + " {init,destroy,list...} [options] [args]")
-		os.Exit(1)
+		help()
 	}
 
 	err := fs.ParseCopy()
@@ -94,8 +116,35 @@ func main() {
 	logger := *log.NewLogger()
 	defer logger.Close()
 
-	logLevel := syslog.Priority(config.Entries["logLevel"].Value.(int))
-	_, _ = logger.NewCh(log.ChConfig{Severity: &logLevel})
+	if config.Entries["logFileEnabled"].Value.(bool) {
+		logLevel := syslog.Priority(config.Entries["logFileLevel"].Value.(int))
+		file := config.Entries["logFileOutput"].Value.(string)
+		_, err := logger.NewCh(log.ChConfig{Severity: &logLevel, Type: log.ChFile, File: file})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	if config.Entries["logStdoutEnabled"].Value.(bool) {
+		logLevel := syslog.Priority(config.Entries["logStdoutLevel"].Value.(int))
+		_, err := logger.NewCh(log.ChConfig{Severity: &logLevel, Type: log.ChFile, File: os.Stdout})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	if config.Entries["logStderrEnabled"].Value.(bool) {
+		logLevel := syslog.Priority(config.Entries["logStderrLevel"].Value.(int))
+		_, err := logger.NewCh(log.ChConfig{Severity: &logLevel, Type: log.ChFile, File: os.Stderr})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	if config.Entries["logSyslogEnabled"].Value.(bool) {
+		logLevel := syslog.Priority(config.Entries["logSyslogLevel"].Value.(int))
+		_, err := logger.NewCh(log.ChConfig{Severity: &logLevel, Type: log.ChSyslog})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 
 	// Logger.Out(LOG_DEBUG, spew.Sdump(Config))
 
@@ -108,20 +157,17 @@ func main() {
 	// endregion: init modules
 	// region: routing
 
-	logger.Out(LOG_DEBUG, spew.Sdump(fs.FlagSet))
+	// logger.Out(LOG_DEBUG, spew.Sdump(fs.FlagSet))
 
-	switch subCommand {
-	case "copy":
-	case "destroy":
-		/*
-			trash directory from Config
-		*/
+	var stdout []byte
+	var stderr error
 
-	case "exec":
-		rasa.Exec(subArgs, nil)
-	case "init":
-		rasa.Init()
-	case "list":
+	switch subCmd {
+	case "rasaexec":
+		stdout, stderr = rasa.Exec(subArgs, nil)
+	// case "rasainit":
+	// 	stdout, stderr = rasa.Init()
+	case "instancelist":
 		/*
 			files, err := ioutil.ReadDir(Config.Entries["instanceRoot"].Value.(string))
 			if err != nil {
@@ -133,12 +179,24 @@ func main() {
 			}
 			instance.List()
 		*/
-	case "version":
-		rasa.Exec([]string{"--version"}, nil)
+	case "rasaversion":
+		stdout, stderr = rasa.Exec([]string{"--version"}, nil)
 	default:
-		panic("no such subcommand '" + subCommand)
+		msg := "invalid subcommand " + subCmd
+		logger.Out(log.LOG_EMERG, msg)
+		os.Exit(2)
 	}
 
-	// endregion:
+	// endregion: routing
+	// region: outputs
+
+	if stderr != nil {
+		logger.Out(log.LOG_ERR, stderr)
+	}
+	if config.Entries["consoleEnabled"].Value.(bool) {
+		fmt.Println(string(stdout))
+	}
+
+	// endregion: outputs
 
 }

@@ -13,7 +13,7 @@ services:
     - "./storage/engine/:/app/"
     entrypoint: /app/main
     command: >
-      exec
+      rasaExec
       -subArgs --version
     # environment:
     # - HTTPPORT=5000

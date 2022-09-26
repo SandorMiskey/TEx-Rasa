@@ -97,7 +97,7 @@ func Exec(subCmd []string, data []byte) (result []byte, err error) {
 
 	scanErr := bufio.NewScanner(stderr)
 	for scanErr.Scan() {
-		Logger.Out(log.LOG_WARNING, scanErr.Text())
+		Logger.Out(log.LOG_WARNING, "rasa.Exec()", scanErr.Text())
 	}
 	if err := scanErr.Err(); err != nil {
 		Logger.Out(log.LOG_ERR, err)

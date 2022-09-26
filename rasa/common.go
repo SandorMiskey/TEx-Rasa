@@ -5,7 +5,6 @@ package rasa
 import (
 	"errors"
 	"log/syslog"
-	"os"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
@@ -21,7 +20,7 @@ var (
 func init() {
 }
 
-func LogLevel() (flag string) {
+func logLevel() (flag string) {
 	switch logLevel := syslog.Priority(Config.Entries["logLevel"].Value.(int)); {
 	case logLevel == log.LOG_DEBUG:
 		flag = "-vv"
@@ -33,25 +32,25 @@ func LogLevel() (flag string) {
 		flag = ""
 	}
 
-	Logger.Out(log.LOG_EMERG, "rasaCmd LogLevel() set to", flag)
+	Logger.Out(log.LOG_DEBUG, "rasaCmd LogLevel() set to", flag)
 	return
 }
 
-func Wd() (err error) {
-	wd, ok := Config.Entries["instanceRoot"].Value.(string)
-	if !ok {
-		err = ErrInvalidInstanceRoot
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if err = os.Chdir(wd); err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if _, err = os.Getwd(); err != nil {
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	Logger.Out(log.LOG_DEBUG, "rasa.Wd() directory set to", wd)
-	return
-}
+// func Wd() (err error) {
+// 	wd, ok := Config.Entries["instanceRoot"].Value.(string)
+// 	if !ok {
+// 		err = ErrInvalidInstanceRoot
+// 		Logger.Out(log.LOG_ERR, err)
+// 		return
+// 	}
+// 	if err = os.Chdir(wd); err != nil {
+// 		Logger.Out(log.LOG_ERR, err)
+// 		return
+// 	}
+// 	if _, err = os.Getwd(); err != nil {
+// 		Logger.Out(log.LOG_ERR, err)
+// 		return
+// 	}
+// 	Logger.Out(log.LOG_DEBUG, "rasa.Wd() directory set to", wd)
+// 	return
+// }

@@ -2,9 +2,13 @@
   "cSpell.words": [
     "erba",
     "fasthttprouter",
+    "instancelist",
     "Loglevel",
     "mgmt",
     "Rasa",
+    "rasaexec",
+    "rasainit",
+    "rasaversion",
     "syslogd"
   ],
   "cSpell.ignoreWords": [
