@@ -47,6 +47,8 @@
 * proxy endpoint
 * client/chat endpoint?
 
+---
+
 * api locking
   * when register/init/copy/destroy instance
   * when run instance (sync.WaitGroup?)
