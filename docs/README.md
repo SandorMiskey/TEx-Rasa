@@ -4,17 +4,16 @@
 
 ## TODO
 
-* instance
-  * list
-  * validate name
-  * register
-  * instanceRootValidate
-  * instance lock/unlock/validate string vs. interface
-* instances to submodule
+* rasa.Exec() validations -> rasaCmd
+  * lock?
+  * len(subArgs)
+
 * init instance
+  * lock
 * train instance
+  * lock
 * api
-  * (rasa|instance).Config !global
+  * storage/engine/instances/
   * output encoders (json, yaml, raw string, spew)
   * instanceList
   * instanceRegister
@@ -55,7 +54,7 @@
 * api locking
   * when register/init/copy/destroy instance
   * when run instance (sync.WaitGroup?)
-* set rasa library log levels az in <https://rasa.com/docs/rasa/command-line-interface#log-level>
+* storage to submodule
+* set rasa library log levels as in <https://rasa.com/docs/rasa/command-line-interface#log-level>
 * validate httpStaticRoot if httpStaticEnabled on start
-* implement Logger.Printf(), set fasthttp.Server() Logger.
 * self signed cert creation in init for proxy and main (check init.sh)

@@ -87,6 +87,7 @@ func main() {
 		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
 	case "instanceregister":
 		fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "enable or disable instance", Type: "bool", Def: true}
+		fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
 		fs.Entries["instanceName"] = cfg.Entry{Desc: "instance name to be registered, can be omitted like: cmd instanceRegister -instanceRoot /foo/bar instance-name-to-be-registered)", Type: "string", Def: ""}
 		fs.Entries["instanceNLU"] = cfg.Entry{Desc: "enable or disable nlu (only) mode", Type: "bool", Def: false}
 		fs.Entries["instancePort"] = cfg.Entry{Desc: "listening port, if there is a enabled instance with this port, then -instanceEnabled will be forced to false", Type: "int", Def: 5005}
@@ -94,14 +95,16 @@ func main() {
 	case "instanceroot":
 		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
 	case "rasaexec":
+		fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
+		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
 		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 		fs.Entries["subArgs"] = cfg.Entry{Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""}
 	case "rasainit":
 		// 	fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "instance is enabled or not", Type: "bool", Def: true}
+		// fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
 		// 	fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
 		// 	fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 		// 	fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
-
 	case "rasaversion":
 		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
 	default:
@@ -117,9 +120,10 @@ func main() {
 	// region: tail
 
 	subArgs := fs.FlagSet.Args()
-	if config.Entries["subArgs"].Value != nil {
+	if config.Entries["subArgs"].Value != "" {
 		subArgs = append(subArgs, config.Entries["subArgs"].Value.(string))
 	}
+	fmt.Println(len(subArgs))
 
 	// endregion: tail
 
@@ -159,16 +163,12 @@ func main() {
 		}
 	}
 
-	// Logger.Out(LOG_DEBUG, spew.Sdump(Config))
-
-	// endregion: logger
-	// region: init modules
-
-	rasa.Config = config
 	rasa.Logger = logger
 	instance.Logger = logger
 
-	// endregion: init modules
+	// Logger.Out(LOG_DEBUG, spew.Sdump(Config))
+
+	// endregion: logger
 	// region: routing
 
 	// logger.Out(LOG_DEBUG, spew.Sdump(fs.FlagSet))
@@ -184,11 +184,12 @@ func main() {
 	case "instanceroot":
 		out, err = instance.Root(config)
 	case "rasaexec":
-		out, err = rasa.Exec(subArgs, nil)
+		out, err = rasa.Exec(config, subArgs, nil)
 	case "rasainit":
 		// 	out, stderr = rasa.Init()
 	case "rasaversion":
-		out, err = rasa.Exec([]string{"--version"}, nil)
+		config.Entries["instanceLock"] = cfg.Entry{Value: false}
+		out, err = rasa.Exec(config, []string{"--version"}, nil)
 	default:
 		msg := "invalid subcommand " + subCmd
 		logger.Out(log.LOG_EMERG, msg)

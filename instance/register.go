@@ -104,7 +104,7 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 	// endregion: engine config
 	// region: lock
 
-	if err = lockRoot(c); err != nil {
+	if err = Lock(c); err != nil {
 		Logger.Out(log.LOG_ERR, me, err)
 		return
 	}
@@ -114,7 +114,7 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	if err = os.Mkdir(instances.Root+"/"+name, os.ModePerm); err != nil {
 		Logger.Out(log.LOG_ERR, me, err)
-		unlockRoot(c)
+		Unlock(c)
 		return
 	}
 
@@ -123,7 +123,7 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 	err = os.WriteFile(instances.Root+"/"+name+"/engine.json", confByteArray, 0644)
 	if err != nil {
 		Logger.Out(log.LOG_ERR, me, err)
-		unlockRoot(c)
+		Unlock(c)
 		return
 	}
 
@@ -131,7 +131,7 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	// endregion: create
 
-	unlockRoot(c)
+	Unlock(c)
 	instances, err = List(c)
 	if err != nil {
 		Logger.Out(log.LOG_ERR, me, err)

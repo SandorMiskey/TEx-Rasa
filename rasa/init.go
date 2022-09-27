@@ -5,6 +5,7 @@ package rasa
 import (
 	"errors"
 
+	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
 )
 
@@ -17,7 +18,7 @@ var (
 
 // endregion: messages
 
-func Init() (result []byte, err error) {
+func Init(c cfg.Config) (result []byte, err error) {
 
 	/*
 		config:
@@ -60,7 +61,7 @@ func Init() (result []byte, err error) {
 	// 	return
 	// }
 
-	result, err = Exec([]string{"init", "--no-prompt", logLevel(), "-h"}, nil)
+	result, err = Exec(c, []string{"init", "--no-prompt", logLevel(c), "-h"}, nil)
 	if err != nil {
 		Logger.Out(log.LOG_ERR, "rasa.Init()", err)
 	}

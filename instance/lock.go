@@ -8,7 +8,19 @@ import (
 	"github.com/SandorMiskey/TEx-kit/log"
 )
 
-func lockRoot(c cfg.Config) (err error) {
+func Lock(c cfg.Config) (err error) {
+
+	// skip lock
+
+	lock, ok := c.Entries["instanceLock"].Value.(bool)
+	if !ok {
+		Logger.Out(log.LOG_WARNING, "cannot validate instanceLock")
+		lock = true
+	}
+	if !lock {
+		Logger.Out(log.LOG_NOTICE, "locking skipped due to instanceLock == true")
+		return
+	}
 
 	// is instanceRoot valid and locked
 
@@ -39,7 +51,7 @@ func lockRoot(c cfg.Config) (err error) {
 	return
 }
 
-func unlockRoot(c cfg.Config) (err error) {
+func Unlock(c cfg.Config) (err error) {
 
 	// is instanceRoot valid and locked
 

@@ -7,6 +7,8 @@ import (
 	"errors"
 	"os/exec"
 
+	"github.com/SandorMiskey/TEx-Rasa/instance"
+	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
 )
 
@@ -20,14 +22,13 @@ var (
 
 // endregion: messages
 
-func Exec(subCmd []string, data []byte) (result []byte, err error) {
+func Exec(c cfg.Config, subCmd []string, data []byte) (result []byte, err error) {
 
 	// region: validations
 
 	// rasa command
 
-	rasaCmd, rasaCmdOk := Config.Entries["rasaCmd"].Value.(string)
-	Logger.Out(log.LOG_DEBUG, "rasaCmd Exec() rasaCmd", rasaCmd)
+	rasaCmd, rasaCmdOk := c.Entries["rasaCmd"].Value.(string)
 
 	if !rasaCmdOk {
 		err = ErrInvalidRasaCmd
@@ -39,6 +40,8 @@ func Exec(subCmd []string, data []byte) (result []byte, err error) {
 		Logger.Out(log.LOG_ERR, err)
 		return
 	}
+
+	Logger.Out(log.LOG_DEBUG, "rasa.Exec() rasaCmd", rasaCmd)
 
 	// subcommand
 
@@ -58,10 +61,6 @@ func Exec(subCmd []string, data []byte) (result []byte, err error) {
 	// data
 
 	Logger.Out(log.LOG_DEBUG, "rasaCmd Exec() data", data)
-
-	// TODO
-	// - more on rasaCmd and subCmd
-	// - search for appearance of '..' pattern
 
 	// endregion: validations
 	// region: compile w/ ins and outs
@@ -87,10 +86,17 @@ func Exec(subCmd []string, data []byte) (result []byte, err error) {
 	// endregion: compile
 	// region: exec
 
+	if err = instance.Lock(c); err != nil {
+		Logger.Out(log.LOG_ERR, err)
+		return
+	}
+
 	data = append(data, '\n')
 	cmd.Start()
 	stdin.Write(data)
 	stdin.Close()
+
+	instance.Unlock(c)
 
 	// endregion: exec
 	// region: scan stderr

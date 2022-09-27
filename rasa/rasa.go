@@ -10,17 +10,21 @@ import (
 )
 
 var (
-	Config cfg.Config
 	Logger log.Logger
-
-	// ErrInvalidInstanceRoot = errors.New("invalid instance root dir")
 )
 
 func init() {
 }
 
-func logLevel() (flag string) {
-	switch logLevel := syslog.Priority(Config.Entries["logLevel"].Value.(int)); {
+func logLevel(c cfg.Config) (flag string) {
+
+	level, ok := c.Entries["logLevel"].Value.(int)
+	if !ok {
+		Logger.Out(log.LOG_WARNING, "invalid loglevel, falling back to -vv")
+		level = 7
+	}
+
+	switch logLevel := syslog.Priority(level); {
 	case logLevel == log.LOG_DEBUG:
 		flag = "-vv"
 	case logLevel >= log.LOG_INFO:
@@ -34,22 +38,3 @@ func logLevel() (flag string) {
 	Logger.Out(log.LOG_DEBUG, "rasaCmd LogLevel() set to", flag)
 	return
 }
-
-// func Wd() (err error) {
-// 	wd, ok := Config.Entries["instanceRoot"].Value.(string)
-// 	if !ok {
-// 		err = ErrInvalidInstanceRoot
-// 		Logger.Out(log.LOG_ERR, err)
-// 		return
-// 	}
-// 	if err = os.Chdir(wd); err != nil {
-// 		Logger.Out(log.LOG_ERR, err)
-// 		return
-// 	}
-// 	if _, err = os.Getwd(); err != nil {
-// 		Logger.Out(log.LOG_ERR, err)
-// 		return
-// 	}
-// 	Logger.Out(log.LOG_DEBUG, "rasa.Wd() directory set to", wd)
-// 	return
-// }
