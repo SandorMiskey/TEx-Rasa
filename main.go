@@ -81,34 +81,54 @@ func main() {
 		"logSyslogLevel":   {Desc: "min severity for logs written to syslog", Type: "int", Def: 7},
 	}
 
+	commonEntriesApply := []string{}
+	commonEntries := map[string]cfg.Entry{
+		"instanceEnabled": {Desc: "enable or disable instance", Type: "bool", Def: true},
+		"instanceLock":    {Desc: "lock instances", Type: "bool", Def: true},
+		"instanceName":    {Desc: "instance name to be registered or initiated, can be omitted like: cmd {instanceRegister|rasaInit} -instanceRoot /foo/bar instance-name-to-be-used)", Type: "string", Def: ""},
+		"instanceRoot":    {Desc: "directory where instances are stored", Type: "string", Def: "/app/instances"},
+		"rasaCmd":         {Desc: "rasa command", Type: "string", Def: "rasa"},
+	}
+
 	subCmd := strings.ToLower(os.Args[1])
 	switch subCmd {
 	case "instancelist":
-		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
+		commonEntriesApply = []string{"instanceRoot"}
 	case "instanceregister":
-		fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "enable or disable instance", Type: "bool", Def: true}
-		fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
-		fs.Entries["instanceName"] = cfg.Entry{Desc: "instance name to be registered, can be omitted like: cmd instanceRegister -instanceRoot /foo/bar instance-name-to-be-registered)", Type: "string", Def: ""}
+		commonEntriesApply = []string{
+			"instanceEnabled",
+			"instanceLock",
+			"instanceName",
+			"instanceRoot",
+		}
 		fs.Entries["instanceNLU"] = cfg.Entry{Desc: "enable or disable nlu (only) mode", Type: "bool", Def: false}
 		fs.Entries["instancePort"] = cfg.Entry{Desc: "listening port, if there is a enabled instance with this port, then -instanceEnabled will be forced to false", Type: "int", Def: 5005}
-		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
 	case "instanceroot":
-		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
+		commonEntriesApply = []string{"instanceRoot"}
 	case "rasaexec":
-		fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
-		fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
-		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		commonEntriesApply = []string{
+			"instanceLock",
+			"instanceRoot",
+			"rasaCmd",
+		}
 		fs.Entries["subArgs"] = cfg.Entry{Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""}
 	case "rasainit":
-		// 	fs.Entries["instanceEnabled"] = cfg.Entry{Desc: "instance is enabled or not", Type: "bool", Def: true}
-		// fs.Entries["instanceLock"] = cfg.Entry{Desc: "lock instances", Type: "bool", Def: true}
-		// 	fs.Entries["instanceRoot"] = cfg.Entry{Desc: "directory where the instances are stored", Type: "string", Def: "/app/instances"}
-		// 	fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
-		// 	fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
+		// commonEntriesApply = []string{
+		// 	"instanceEnabled",
+		// 	"instanceLock",
+		// 	"instanceName",
+		// 	"instanceRoot",
+		// 	"rasaCmd",
+		// }
+		// fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
 	case "rasaversion":
-		fs.Entries["rasaCmd"] = cfg.Entry{Desc: "rasa command", Type: "string", Def: "rasa"}
+		commonEntriesApply = []string{"rasaCmd"}
 	default:
 		help()
+	}
+
+	for _, v := range commonEntriesApply {
+		fs.Entries[v] = commonEntries[v]
 	}
 
 	errParse := fs.ParseCopy()
@@ -120,8 +140,8 @@ func main() {
 	// region: tail
 
 	subArgs := fs.FlagSet.Args()
-	if config.Entries["subArgs"].Value != "" {
-		subArgs = append(subArgs, config.Entries["subArgs"].Value.(string))
+	if add, ok := config.Entries["subArgs"].Value.(string); ok && len(add) > 0 {
+		subArgs = append(subArgs, add)
 	}
 	fmt.Println(len(subArgs))
 
