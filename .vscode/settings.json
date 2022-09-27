@@ -3,6 +3,8 @@
     "erba",
     "fasthttprouter",
     "instancelist",
+    "instanceregister",
+    "instanceroot",
     "Loglevel",
     "mgmt",
     "Rasa",

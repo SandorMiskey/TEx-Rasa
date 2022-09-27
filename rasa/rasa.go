@@ -3,7 +3,6 @@
 package rasa
 
 import (
-	"errors"
 	"log/syslog"
 
 	"github.com/SandorMiskey/TEx-kit/cfg"
@@ -14,7 +13,7 @@ var (
 	Config cfg.Config
 	Logger log.Logger
 
-	ErrInvalidInstanceRoot = errors.New("invalid instance root dir")
+	// ErrInvalidInstanceRoot = errors.New("invalid instance root dir")
 )
 
 func init() {

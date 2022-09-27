@@ -10,6 +10,7 @@ Gopkg.lock
 .rasa
 credentials.yml
 storage/engine/main
+storage/engine/instances/locked
 dhparam.pem
 selfsigned.crt
 selfsigned.key

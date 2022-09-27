@@ -8,13 +8,19 @@
   * list
   * validate name
   * register
+  * instanceRootValidate
+  * instance lock/unlock/validate string vs. interface
+* instances to submodule
 * init instance
 * train instance
 * api
-  * rasa.Config !global
-  * version
-  * exec
-  * init
+  * (rasa|instance).Config !global
+  * output encoders (json, yaml, raw string, spew)
+  * instanceList
+  * instanceRegister
+  * rasaVersion
+  * rasaExec
+  * rasaInit
     * buffer output
   * train
     * buffer output
