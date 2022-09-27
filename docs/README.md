@@ -4,10 +4,6 @@
 
 ## TODO
 
-* rasa.Exec() validations -> rasaCmd
-  * lock?
-  * len(subArgs)
-
 * init instance
   * lock
 * train instance
