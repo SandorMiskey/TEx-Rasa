@@ -13,15 +13,6 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	me := "instance.Register()"
 
-	// region: existing instances
-
-	instances, err = List(c)
-	if err != nil {
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	// endregion: existing instances
 	// region: instance name
 
 	name, ok := c.Entries["instanceName"].Value.(string)
@@ -50,12 +41,6 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	if !validateName(name) {
 		err = errors.New("invalid instance name")
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	if instances.Instances[name] != nil {
-		err = errors.New("instance " + name + " already exists")
 		Logger.Out(log.LOG_ERR, me, err)
 		return
 	}
@@ -110,11 +95,28 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 	}
 
 	// endregion: lock
+	// region: existing instances
+
+	instances, err = List(c)
+	if err != nil {
+		Unlock(c)
+		Logger.Out(log.LOG_ERR, me, err)
+		return
+	}
+
+	if instances.Instances[name] != nil {
+		Unlock(c)
+		err = errors.New("instance " + name + " already exists")
+		Logger.Out(log.LOG_ERR, me, err)
+		return
+	}
+
+	// endregion: existing instances
 	// region: create
 
 	if err = os.Mkdir(instances.Root+"/"+name, os.ModePerm); err != nil {
-		Logger.Out(log.LOG_ERR, me, err)
 		Unlock(c)
+		Logger.Out(log.LOG_ERR, me, err)
 		return
 	}
 
@@ -122,8 +124,8 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	err = os.WriteFile(instances.Root+"/"+name+"/engine.json", confByteArray, 0644)
 	if err != nil {
-		Logger.Out(log.LOG_ERR, me, err)
 		Unlock(c)
+		Logger.Out(log.LOG_ERR, me, err)
 		return
 	}
 
