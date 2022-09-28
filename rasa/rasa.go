@@ -18,7 +18,7 @@ func init() {
 
 func logLevel(c cfg.Config) (flag string) {
 
-	level, ok := c.Entries["logLevel"].Value.(int)
+	level, ok := c.Entries["rasaLogLevel"].Value.(int)
 	if !ok {
 		Logger.Out(log.LOG_WARNING, "invalid loglevel, falling back to -vv")
 		level = 7

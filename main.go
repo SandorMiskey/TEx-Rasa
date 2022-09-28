@@ -13,6 +13,7 @@ import (
 	"github.com/SandorMiskey/TEx-kit/cfg"
 	"github.com/SandorMiskey/TEx-kit/log"
 	"github.com/davecgh/go-spew/spew"
+	"go.uber.org/multierr"
 
 	"github.com/SandorMiskey/TEx-Rasa/instance"
 	"github.com/SandorMiskey/TEx-Rasa/rasa"
@@ -86,8 +87,10 @@ func main() {
 		"instanceEnabled": {Desc: "enable or disable instance", Type: "bool", Def: true},
 		"instanceLock":    {Desc: "lock instances", Type: "bool", Def: true},
 		"instanceName":    {Desc: "instance name to be registered or initiated, can be omitted like: cmd {instanceRegister|rasaInit} -instanceRoot /foo/bar instance-name-to-be-used)", Type: "string", Def: ""},
+		"instancePort":    {Desc: "listening port, if there is a enabled instance with this port, then -instanceEnabled will be forced to false", Type: "int", Def: 5005},
 		"instanceRoot":    {Desc: "directory where instances are stored", Type: "string", Def: "/app/instances"},
 		"rasaCmd":         {Desc: "rasa command", Type: "string", Def: "rasa"},
+		"rasaLogLevel":    {Desc: "min severity for logs written to syslog", Type: "int", Def: 7},
 	}
 
 	subCmd := strings.ToLower(os.Args[1])
@@ -99,10 +102,10 @@ func main() {
 			"instanceEnabled",
 			"instanceLock",
 			"instanceName",
+			"instancePort",
 			"instanceRoot",
 		}
 		fs.Entries["instanceNLU"] = cfg.Entry{Desc: "enable or disable nlu (only) mode", Type: "bool", Def: false}
-		fs.Entries["instancePort"] = cfg.Entry{Desc: "listening port, if there is a enabled instance with this port, then -instanceEnabled will be forced to false", Type: "int", Def: 5005}
 	case "instanceroot":
 		commonEntriesApply = []string{"instanceRoot"}
 	case "rasaexec":
@@ -110,17 +113,18 @@ func main() {
 			"instanceLock",
 			"instanceRoot",
 			"rasaCmd",
+			"rasaLogLevel",
 		}
 		fs.Entries["subArgs"] = cfg.Entry{Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""}
 	case "rasainit":
-		// commonEntriesApply = []string{
-		// 	"instanceEnabled",
-		// 	"instanceLock",
-		// 	"instanceName",
-		// 	"instanceRoot",
-		// 	"rasaCmd",
-		// }
-		// fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
+		commonEntriesApply = []string{
+			"instanceLock",
+			"instanceName",
+			"instanceRoot",
+			"rasaCmd",
+			"rasaLogLevel",
+		}
+		fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
 	case "rasaversion":
 		commonEntriesApply = []string{"rasaCmd"}
 	default:
@@ -206,7 +210,7 @@ func main() {
 	case "rasaexec":
 		out, err = rasa.Exec(config, subArgs, nil)
 	case "rasainit":
-		// 	out, stderr = rasa.Init()
+		out, err = rasa.Init(config, subArgs)
 	case "rasaversion":
 		config.Entries["instanceLock"] = cfg.Entry{Value: false}
 		out, err = rasa.Exec(config, []string{"--version"}, nil)
@@ -228,7 +232,7 @@ func main() {
 			b, e := json.Marshal(out)
 			if e != nil {
 				logger.Out(log.LOG_ERR, e)
-				err = fmt.Errorf("%s\n%s)", err, e)
+				err = multierr.Append(err, e)
 			}
 			stdout = string(b)
 		case nil:

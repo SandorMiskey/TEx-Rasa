@@ -38,7 +38,7 @@ func List(c cfg.Config) (result *Instances, err error) {
 
 	for _, v := range files {
 		if v.IsDir() {
-			if !validateName(v.Name()) {
+			if !NameValid(v.Name()) {
 				Logger.Out(log.LOG_NOTICE, "instance.List()", v.Name(), "invalid instance name")
 				continue
 			}

@@ -15,62 +15,71 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 
 	// region: instance name
 
-	name, ok := c.Entries["instanceName"].Value.(string)
-	if !ok {
-		err = errors.New("invalid instance name")
-		Logger.Out(log.LOG_ERR, me, name, err)
+	err = NameParse(&c, &i)
+	if err != nil {
+		Logger.Out(log.LOG_ERR, "unable to parse instance name", err)
 		return
 	}
-
-	if len(name) == 0 {
-		if len(i) > 0 {
-			name = i[0]
-			if len(i) > 1 {
-				Logger.Out(log.LOG_DEBUG, me, "extra parameters will be ignored", i[1:])
-			}
-		}
-	} else {
-		Logger.Out(log.LOG_DEBUG, me, "extra parameters will be ignored", i)
-	}
-
-	if len(name) == 0 {
-		err = errors.New("you have to name your instance to be registered")
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	if !validateName(name) {
-		err = errors.New("invalid instance name")
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
+	name := c.Entries["instanceName"].Value.(string)
 	Logger.Out(log.LOG_DEBUG, me, "instance name", name)
 
 	// endregion: instance name
+	// region: lock
+
+	if err = Lock(c); err != nil {
+		Logger.Out(log.LOG_ERR, me, err)
+		return
+	}
+
+	// endregion: lock
+	// region: existing instances
+
+	exists, err := Exists(c)
+	if err != nil {
+		Unlock(c)
+		Logger.Out(log.LOG_ERR, me, err)
+		return
+	}
+	if exists {
+		Unlock(c)
+		err = errors.New("instance " + name + " already exists")
+		Logger.Out(log.LOG_ERR, me, err)
+		return
+	}
+	Logger.Out(log.LOG_DEBUG, me, "instance doesn't exist")
+
+	// endregion: existing instances
 	// region: engine config
 
 	var confInstance Instance
 	var confByteArray []byte
+	var confOk bool
 
-	confInstance.Enabled, ok = c.Entries["instanceEnabled"].Value.(bool)
-	if !ok {
+	confInstance.Enabled, confOk = c.Entries["instanceEnabled"].Value.(bool)
+	if !confOk {
 		err = errors.New("invalid instanceEnabled")
 		Logger.Out(log.LOG_ERR, me, err, c.Entries["instanceEnabled"].Value)
 		return
 	}
 
-	confInstance.NLU, ok = c.Entries["instanceNLU"].Value.(bool)
-	if !ok {
+	confInstance.NLU, confOk = c.Entries["instanceNLU"].Value.(bool)
+	if !confOk {
 		err = errors.New("invalid instanceNLU")
 		Logger.Out(log.LOG_ERR, me, err, c.Entries["instanceNLU"].Value)
 		return
 	}
 
-	confInstance.Port, ok = c.Entries["instancePort"].Value.(int)
-	if !ok {
+	confInstance.Port, confOk = c.Entries["instancePort"].Value.(int)
+	if !confOk {
 		err = errors.New("invalid instancePort")
 		Logger.Out(log.LOG_ERR, me, err, c.Entries["instancePort"].Value)
+		return
+	}
+
+	instances, err = List(c)
+	if err != nil {
+		Unlock(c)
+		Logger.Out(log.LOG_ERR, me, err)
 		return
 	}
 	for _, v := range instances.Instances {
@@ -86,32 +95,9 @@ func Register(c cfg.Config, i []string) (instances *Instances, err error) {
 		return
 	}
 
+	Logger.Out(log.LOG_DEBUG, me, "instance config", confInstance)
+
 	// endregion: engine config
-	// region: lock
-
-	if err = Lock(c); err != nil {
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	// endregion: lock
-	// region: existing instances
-
-	instances, err = List(c)
-	if err != nil {
-		Unlock(c)
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	if instances.Instances[name] != nil {
-		Unlock(c)
-		err = errors.New("instance " + name + " already exists")
-		Logger.Out(log.LOG_ERR, me, err)
-		return
-	}
-
-	// endregion: existing instances
 	// region: create
 
 	if err = os.Mkdir(instances.Root+"/"+name, os.ModePerm); err != nil {

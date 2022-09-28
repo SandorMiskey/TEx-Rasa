@@ -4,8 +4,6 @@
 
 ## TODO
 
-* init instance
-  * lock
 * train instance
   * lock
 * api
@@ -28,6 +26,7 @@
 * update instance config/data
   * enable/disable instance
   * nlu mode true/false
+  * change port
   * training data
   * domain data
   * config
@@ -53,6 +52,7 @@
   * when register/init/copy/destroy instance
   * when run instance (sync.WaitGroup?)
 * storage to submodule
+* log levels everywhere
 * set rasa library log levels as in <https://rasa.com/docs/rasa/command-line-interface#log-level>
 * validate httpStaticRoot if httpStaticEnabled on start
 * self signed cert creation in init for proxy and main (check init.sh)

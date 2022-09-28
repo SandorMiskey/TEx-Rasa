@@ -96,8 +96,6 @@ func Exec(c cfg.Config, subCmd []string, data []byte) (result []byte, err error)
 	stdin.Write(data)
 	stdin.Close()
 
-	instance.Unlock(c)
-
 	// endregion: exec
 	// region: scan stderr
 
@@ -120,14 +118,17 @@ func Exec(c cfg.Config, subCmd []string, data []byte) (result []byte, err error)
 	Logger.Out(log.LOG_NOTICE, "rasaCmd.Exec() result", "\n"+string(result))
 	if err = scanOut.Err(); err != nil {
 		Logger.Out(log.LOG_ERR, err)
+		instance.Unlock(c)
 		return
 	}
 	if err = cmd.Wait(); err != nil {
 		Logger.Out(log.LOG_ERR, err)
+		instance.Unlock(c)
 		return
 	}
 
 	// endregion: stdout
 
+	instance.Unlock(c)
 	return
 }

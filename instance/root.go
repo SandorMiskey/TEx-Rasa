@@ -11,7 +11,7 @@ import (
 
 func Root(c cfg.Config) (inst *Instances, err error) {
 
-	inst = NewInstances()
+	inst = new()
 
 	// region: validate instanceRoot type
 

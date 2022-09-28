@@ -18,13 +18,13 @@ func Lock(c cfg.Config) (err error) {
 		lock = true
 	}
 	if !lock {
-		Logger.Out(log.LOG_NOTICE, "locking skipped due to instanceLock == true")
+		Logger.Out(log.LOG_NOTICE, "locking skipped due to instanceLock != true")
 		return
 	}
 
 	// is instanceRoot valid and locked
 
-	var root = NewInstances()
+	var root = new()
 
 	if root, err = Root(c); err != nil {
 		Logger.Out(log.LOG_ERR, err)
@@ -53,9 +53,21 @@ func Lock(c cfg.Config) (err error) {
 
 func Unlock(c cfg.Config) (err error) {
 
+	// skip lock
+
+	lock, ok := c.Entries["instanceLock"].Value.(bool)
+	if !ok {
+		Logger.Out(log.LOG_WARNING, "cannot validate instanceLock, locking set")
+		lock = true
+	}
+	if !lock {
+		Logger.Out(log.LOG_NOTICE, "locking skipped due to instanceLock != true")
+		return
+	}
+
 	// is instanceRoot valid and locked
 
-	var root = NewInstances()
+	var root = new()
 
 	if root, err = Root(c); err != nil {
 		Logger.Out(log.LOG_ERR, err)
