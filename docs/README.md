@@ -43,12 +43,13 @@
   * nlg
   * logging facility
     * direct logs there (conditional, flags for that)
-    * direct rasa output there, like in `rasa run -- use-syslog --syslog-(address|port|protocol)
+    * direct rasa output there, like in `rasa run --use-syslog --syslog-(address|port|protocol)
 * proxy endpoint
 * client/chat endpoint?
 
 ---
 
+* Unix syslog delivery error
 * api locking
   * when register/init/copy/destroy instance
   * when run instance (sync.WaitGroup?)

@@ -78,7 +78,7 @@ func main() {
 		"logStdoutLevel":   {Desc: "min severity for logs written to stdout", Type: "int", Def: 7},
 		"logStderrEnabled": {Desc: "writes logs to stderr", Type: "bool", Def: true},
 		"logStderrLevel":   {Desc: "min severity for logs written to stderr", Type: "int", Def: 7},
-		"logSyslogEnabled": {Desc: "writes logs to local syslog", Type: "bool", Def: true},
+		"logSyslogEnabled": {Desc: "writes logs to local syslog", Type: "bool", Def: false},
 		"logSyslogLevel":   {Desc: "min severity for logs written to syslog", Type: "int", Def: 7},
 	}
 
@@ -91,6 +91,7 @@ func main() {
 		"instanceRoot":    {Desc: "directory where instances are stored", Type: "string", Def: "/app/instances"},
 		"rasaCmd":         {Desc: "rasa command", Type: "string", Def: "rasa"},
 		"rasaLogLevel":    {Desc: "min severity for logs written to syslog", Type: "int", Def: 7},
+		"subArgs":         {Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""},
 	}
 
 	subCmd := strings.ToLower(os.Args[1])
@@ -114,8 +115,8 @@ func main() {
 			"instanceRoot",
 			"rasaCmd",
 			"rasaLogLevel",
+			"subArgs",
 		}
-		fs.Entries["subArgs"] = cfg.Entry{Desc: "appended to the tail, use when you want to pass something begins with - (or use the -- separator)", Type: "string", Def: ""}
 	case "rasainit":
 		commonEntriesApply = []string{
 			"instanceLock",
@@ -123,6 +124,7 @@ func main() {
 			"instanceRoot",
 			"rasaCmd",
 			"rasaLogLevel",
+			"subArgs",
 		}
 		fs.Entries["rasaPrompt"] = cfg.Entry{Desc: "choose default options for prompts and suppress warnings (DEPRECATED!)", Type: "bool", Def: false}
 	case "rasaversion":
