@@ -21,6 +21,7 @@
   * rasa run instance
   * instance run foobar
   * instance run (all)
+  * api
 * copy instance
 * destroy instance
 * update instance config/data
