@@ -9,8 +9,11 @@ Gopkg.lock
 .keras
 .rasa
 credentials.yml
-storage/engine/main
 storage/engine/instances
+storage/engine/locked
+storage/engine/main
+storage/engine/main
+log
 dhparam.pem
 selfsigned.crt
 selfsigned.key

@@ -4,8 +4,31 @@
 
 ## TODO
 
+* rasa
+  * exec
+  * version
+* new instance
+* engine lock
+* instance
+  * register
+  * init
+* rasa
+  * version
+  * exec
+
+* config
+  * new config, config.Read(), config.Write()
+  * read config
+  * write config
+    * instance.Register()
+    * instance.List()
+  * add 'initiated'
+    * rasa.Init()
+  * add training parameters
+* rasa.Init() force if already init'ed
 * train instance
   * lock
+
 * api
   * storage/engine/instances/
   * output encoders (json, yaml, raw string, spew)
@@ -46,6 +69,7 @@
     * direct rasa output there, like in `rasa run --use-syslog --syslog-(address|port|protocol)
 * proxy endpoint
 * client/chat endpoint?
+  * <https://github.com/botfront/rasa-webchat>
 
 ---
 

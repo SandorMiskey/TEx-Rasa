@@ -3,45 +3,20 @@
 package rasa
 
 import (
-	"bufio"
 	"errors"
-	"os/exec"
-
-	"github.com/SandorMiskey/TEx-Rasa/instance"
-	"github.com/SandorMiskey/TEx-kit/cfg"
-	"github.com/SandorMiskey/TEx-kit/log"
 )
 
 // endregion: packages
 // region: messages
 
 var (
-	ErrInvalidRasaCmd = errors.New("invalid rasaCmd")
-	ErrInvalidSubCmd  = errors.New("there must be a subcommand")
+	ErrInvalidSubCmd = errors.New("there must be a subcommand")
 )
 
 // endregion: messages
 
-func Exec(c cfg.Config, subCmd []string, data []byte) (result []byte, err error) {
-
-	// region: validations
-
-	// rasa command
-
-	rasaCmd, rasaCmdOk := c.Entries["rasaCmd"].Value.(string)
-
-	if !rasaCmdOk {
-		err = ErrInvalidRasaCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-	if len(rasaCmd) == 0 {
-		err = ErrInvalidRasaCmd
-		Logger.Out(log.LOG_ERR, err)
-		return
-	}
-
-	Logger.Out(log.LOG_DEBUG, "rasa.Exec() rasaCmd", rasaCmd)
+/*
+func Exec(r Rasa, subCmd []string, data []byte) (result []byte, err error) {
 
 	// subcommand
 
@@ -132,3 +107,5 @@ func Exec(c cfg.Config, subCmd []string, data []byte) (result []byte, err error)
 	instance.Unlock(c)
 	return
 }
+
+*/
